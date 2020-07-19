@@ -16,7 +16,7 @@ Puedes encontrar la documentación sobre cada endpoint y cada modelo asociado a 
 
 ## :orange_book: Casos de uso 
 
-| Módulo | Nombre | Descripción |
+|              Modulo               |                                     Nombre                                      |                          Descripcion                           |
 | --- | --- | --- |
 | `Buscar Cliente` | [Buscar Cliente](#buscar-cliente) | Enumera |
 | `Fibercorp` | [Fibercorp](#fibercorp) | Enumera |
