@@ -24,15 +24,15 @@ Puedes encontrar la documentación sobre cada endpoint y cada modelo asociado a 
 | `Telecom Datos` | [Telecom Datos](#telecom-datos) | Enumera |
 | `Personal` | [Personal](#personal) | Enumera |
 
-## :gem: Buscar Cliente
+## :mag: Buscar Cliente
 
-## :gem: FiberCorp
+## :computer: FiberCorp
 
-## :gem: Telecom Voz
+## :phone: Telecom Voz
 
-## :gem: Telecom Datos
+## :phone: Telecom Datos
 
-## :gem: Personal
+## :iphone: Personal
 
 
 
