@@ -43,10 +43,19 @@ En la siguiente tabla se listan los diferentes casos de uso que soporta actualem
 
 |              Modulo               |                                     Nombre                                      |                          Descripcion                           |
 | --- | --- | --- |
-| `Buscar Cliente` | [Buscar Cliente](#mag-buscar-cliente) |  |
-| `Fibercorp` | [Fibercorp](#computer-fibercorp) |  |
-| `Telecom Voz` | [Telecom Voz](#phone-telecom-voz) |  |
-| `Telecom Datos` | [Telecom Datos](#phone-telecom-datos) |  |
+| `Clientes` | [Listado Tipos de documento](#mag-buscar-cliente) |  |
+| `Fibercorp` | [Listado de Contratos](#computer-fibercorp) |  |
+| `Fibercorp` | [Litado de Facturas](#computer-fibercorp) |  |
+| `Fibercorp` | [Listado de Notas de Credito](#computer-fibercorp) |  |
+| `Fibercorp` | [Ver Factura PDF](#computer-fibercorp) |  |
+| `Telecom Datos` | [Listado de Acuerdos](#phone-telecom-datos) |  |
+| `Telecom Datos` | [Listado de Facturas](#phone-telecom-datos) |  |
+| `Telecom Datos` | [Listado de Notas de Crédito](#phone-telecom-datos) |  |
+| `Telecom Datos` | [Listado de Notas de Débito](#phone-telecom-datos) |  |
+| `Telecom Datos` | [Ver Factura PDF](#phone-telecom-datos) |  |
+| `Personal` | [Referencias de Pago](#iphone-personal) |  |
+| `Personal` | [Listado de Facturas](#iphone-personal) |  |
+| `Personal` | [Personal](#iphone-personal) |  |
 | `Personal` | [Personal](#iphone-personal) |  |
 
 ## :mag: Buscar Cliente
