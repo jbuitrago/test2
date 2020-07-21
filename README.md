@@ -1,14 +1,37 @@
-# Datos de mi Empresa
+## :blue_book:  Datos de mi Empresa
 
 Aplicación de uso general para la visualización de Facturas
 
-## Front-End
+## :blue_book: Front-End
 > Framework: Angular 8,
 > Dependencies : Bootstrap 4, Material 8
 
-## Back-End
+## :blue_book: Back-End
 > NetCore 2.2
 En el siguiente link se encuentra la documentacion de la API - [Swagger](https://desktopdesa.fibercorp.com.ar/v2/swagger/index.html) 
+
+## :blue_book: Instalacion
+
+Clonar el repositorio:
+
+```
+git clone ssh://git@git.int.fibercorp.com.ar:2201/synaptic/facturasapp.git
+
+cd facturasapp
+
+```
+
+Instalar las dependencias:
+
+```
+npm install
+```
+
+Ejecutar en Desarrollo:
+
+```
+npm run dev
+```
 
 ## :blue_book: Documentación de la API
 
