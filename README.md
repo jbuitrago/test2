@@ -16,15 +16,21 @@ Puedes encontrar la documentación sobre cada endpoint y cada modelo asociado a 
 
 ## :orange_book: Casos de uso 
 
+En la siguiente tabla se listan los diferentes casos de uso que soporta actualemente la API:
+
 |              Modulo               |                                     Nombre                                      |                          Descripcion                           |
 | --- | --- | --- |
-| `Buscar Cliente` | [Buscar Cliente](#buscar-cliente) | Enumera |
-| `Fibercorp` | [Fibercorp](#fibercorp) | Enumera |
-| `Telecom Voz` | [Telecom Voz](#telecom-voz) | Enumera |
-| `Telecom Datos` | [Telecom Datos](#telecom-datos) | Enumera |
-| `Personal` | [Personal](#personal) | Enumera |
+| `Buscar Cliente` | [Buscar Cliente](#mag-buscar-cliente) |  |
+| `Fibercorp` | [Fibercorp](#computer-fibercorp) |  |
+| `Telecom Voz` | [Telecom Voz](#phone-telecom-voz) |  |
+| `Telecom Datos` | [Telecom Datos](#phone-telecom-datos) |  |
+| `Personal` | [Personal](#iphone-personal) |  |
 
 ## :mag: Buscar Cliente
+
+Buscar un cliente para ver las facturas puede utilizar la opción Nro Documento y utilizar alguno de los  de los siguientes  cuit : 30500010084 , 30500006613, 20260490347, 20295944537, 30500051309, 30500057102,30500094156,  30500247882, 30500487379
+
+
 
 ## :computer: FiberCorp
 
@@ -33,6 +39,12 @@ Puedes encontrar la documentación sobre cada endpoint y cada modelo asociado a 
 ## :phone: Telecom Datos
 
 ## :iphone: Personal
+
+
+## :green_book: Casos de uso para testing
+
+En la siguiente lista, se muestra el orden y descripción de cada paso a probar:
+
 
 
 
