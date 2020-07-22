@@ -43,25 +43,44 @@ En la siguiente tabla se listan los diferentes casos de uso que soporta actualem
 
 |              Modulo               |                                     Nombre                                      |                          Descripcion                           |
 | --- | --- | --- |
-| `Clientes` | [Listado Tipos de documento](#mag-listado-tipos-de-documento) |  |
-| `Fibercorp` | [Listado de Contratos](#computer-fibercorp) |  |
-| `Fibercorp` | [Litado de Facturas](#computer-fibercorp) |  |
-| `Fibercorp` | [Listado de Notas de Credito](#computer-fibercorp) |  |
-| `Fibercorp` | [Ver Factura Fibercorp PDF](#computer-fibercorp) |  |
-| `Telecom Datos` | [Listado de Acuerdos](#phone-telecom-datos) |  |
-| `Telecom Datos` | [Listado de Facturas](#phone-telecom-datos) |  |
-| `Telecom Datos` | [Listado de Notas de Crédito](#phone-telecom-datos) |  |
-| `Telecom Datos` | [Listado de Notas de Débito](#phone-telecom-datos) |  |
-| `Telecom Datos` | [Ver Factura PDF](#phone-telecom-datos) |  |
-| `Personal` | [Referencias de Pago](#iphone-personal) |  |
-| `Personal` | [Listado de Facturas](#iphone-personal) |  |
-| `Personal` | [Personal](#iphone-personal) |  |
-| `Personal` | [Personal](#iphone-personal) |  |
+| `Clientes` | [Tipos documento](#mag-tipos-documento-clientes) |  |
+| `Fibercorp` | [Contratos](#mag-contratos-fibercorp) |  |
+| `Fibercorp` | [Facturas](#mag-facturas-fibercorp) |  |
+| `Fibercorp` | [Notas de Credito](#mag-notas-de-credito-fibercorp) |  |
+| `Fibercorp` | [PDF](#mag-factura-fibercorp-pdf) |  |
+| `Telecom Datos` | [Acuerdos](#mag-acuerdos-telecom-datos) |  |
+| `Telecom Datos` | [Facturas](#mag-facturas-telecom-datos) |  |
+| `Telecom Datos` | [Notas de Crédito](#mag-notas-de-credito-telecom-datos) |  |
+| `Telecom Datos` | [Notas de Débito](#mag-notas-de-debito-telecom-datos) |  |
+| `Telecom Datos` | [Facturas PDF](#mag-facturas-telecom-datos-pdf) |  |
+| `Personal` | [Referencias de Pago](#mag-referencias-de-pago-personal) |  |
+| `Personal` | [Facturas ](#mag-facturas-personal) |  |
 
 
-## :mag: Listado Tipos de documento
+## :mag: Tipos documento 
 
-El listado de tipos de documento se puede ver cp
+## :mag: Contratos Fibercorp
+
+## :mag: Facturas Fibercorp
+
+## :mag: Notas de credito Fibercorp
+
+## :mag: Factura Fibercorp PDF
+
+## :mag: Acuerdos Telecom 
+
+## :mag: Facturas Telecom Datos
+
+## :mag: Notas de credito Telecom Datos
+
+## :mag: Notas de debito Telecom Datos
+
+## :mag: Facturas Telecom Datos PDF
+
+## :mag: Referencias de pago Personal
+
+## :mag: Facturas Personal
+
 
 
 
