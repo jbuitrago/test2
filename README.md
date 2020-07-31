@@ -50,15 +50,15 @@ En la siguiente tabla se listan los diferentes casos de uso que soporta actualem
 | `Fibercorp` | [Notas de Credito](#computer-notas-de-credito-fibercorp) |  Listado de Notas de Crédito |FibercorpFacturaCreditNotes
 | `Fibercorp` | [Facturas PDF](#computer-factura-fibercorp-pdf) | Factura en PDF |  urlObtainPDFFibercorpReal
 | `Fibercorp` | [DOLAR](#computer-cotizador-dolar) |Cotizacion Dolar |  getCotizadorDolarData
-| `Telecom Datos` | [Acuerdos](#mag-acuerdos-telecom-datos) | Listado de Acuerdos de Telecom Datos | urlAgreementsSearch
-| `Telecom Datos` | [Facturas](#mag-facturas-telecom-datos) | Listado de Facturas de Telecom Datos | urlAgreementsSearch
-| `Telecom Datos` | [Notas de Crédito](#mag-notas-de-credito-telecom-datos) | Listado de Notas de Crédito de Telecom Datos | urlAgreementsSearch
-| `Telecom Datos` | [Notas de Débito](#mag-notas-de-debito-telecom-datos) |Listado de Notas de Debito de Telecom Datos | urlAgreementsSearch
-| `Telecom Datos` | [Facturas PDF](#mag-facturas-telecom-datos-pdf) | Telecom Datos en PDF | urlObtainPdfMobileResources
-| `Personal` | [Referencias de Pago](#mag-referencias-de-pago-personal) | Listado de Referencias de Pago| urlReferencesSearch
-| `Personal` | [Números de Linea](#mag-numeros-de-linea-personal) | Listado de Núumeros de Línea| urlReferencesSearch
-| `Personal` | [Facturas ](#mag-facturas-personal) | Facturas | urlGetInfoMobileListResource
-| `Personal` | [Facturas PDF](#mag-facturas-personal-pdf) | Personal en PDF | urlObtainPdfMobileResources
+| `Telecom Datos` | [Acuerdos](#phone-acuerdos-telecom-datos) | Listado de Acuerdos de Telecom Datos | urlAgreementsSearch
+| `Telecom Datos` | [Facturas](#phone-facturas-telecom-datos) | Listado de Facturas de Telecom Datos | urlAgreementsSearch
+| `Telecom Datos` | [Notas de Crédito](#phone-notas-de-credito-telecom-datos) | Listado de Notas de Crédito de Telecom Datos | urlAgreementsSearch
+| `Telecom Datos` | [Notas de Débito](#phone-notas-de-debito-telecom-datos) |Listado de Notas de Debito de Telecom Datos | urlAgreementsSearch
+| `Telecom Datos` | [Facturas PDF](#phone-facturas-telecom-datos-pdf) | Telecom Datos en PDF | urlObtainPdfMobileResources
+| `Personal` | [Referencias de Pago](#iphone-referencias-de-pago-personal) | Listado de Referencias de Pago| urlReferencesSearch
+| `Personal` | [Números de Linea](#iphone-numeros-de-linea-personal) | Listado de Núumeros de Línea| urlReferencesSearch
+| `Personal` | [Facturas ](#iphone-facturas-personal) | Facturas | urlGetInfoMobileListResource
+| `Personal` | [Facturas PDF](#iphone-facturas-personal-pdf) | Personal en PDF | urlObtainPdfMobileResources
 
 ## :mag: Tipos documento clientes
 
@@ -124,7 +124,7 @@ GET /v2/api/Data/getCotizadorDolarData
 
 ```
 
-## :mag: Acuerdos Telecom Datos
+## :phone: Acuerdos Telecom Datos
 
 Listado de Acuerdos
 
@@ -134,7 +134,7 @@ GET /v2/api/search/billingmanagement.getinfofijadatosresources
 ```
 
 
-## :mag: Facturas Telecom Datos
+## :phone: Facturas Telecom Datos
 
 Listado de Facturas
 
@@ -144,7 +144,7 @@ GET /v2/api/search/billingmanagement.getinfofijadatosresources
 ```
 
 
-## :mag: Notas de credito Telecom Datos
+## :phone: Notas de credito Telecom Datos
 
 Listado de Notas de Crédito
 
@@ -154,7 +154,7 @@ GET /v2/api/Data/
 ```
 
 
-## :mag: Notas de debito Telecom Datos
+## :phone: Notas de debito Telecom Datos
 
 Listado de Notas de Débito
 
@@ -164,7 +164,7 @@ GET /v2/api/Data/
 ```
 
 
-## :mag: Facturas Telecom Datos PDF
+## :phone: Facturas Telecom Datos PDF
 
 Obtener Factura en PDF
 
@@ -174,7 +174,7 @@ GET /v2/api/search/billingmanagement.getinfofijadatosresources
 ```
 
 
-## :mag: Referencias de pago Personal
+## :iphone: Referencias de pago Personal
 
 El servicio retorna información para obtener documentos (facturas, notas decrédito o debito) de un cliente.Se podrá llamar solo por cuit y retornara todas las referencia de pago.Se podrá llamar con cuit y referencia de pago para obtener los números de líneas
 
@@ -182,7 +182,7 @@ El servicio retorna información para obtener documentos (facturas, notas decré
 GET /v2/api/search/billingmanagement.getinfomobilecustomerdata
 
 ```
-## :mag: Números de Linea Personal
+## :iphone: Números de Linea Personal
 
 El servicio retorna información para obtener documentos (facturas, notas decrédito o debito) de un cliente.Se podrá llamar solo por cuit y retornara todas las referencia de pago.Se podrá llamar con cuit y referencia de pago para obtener los números de líneas
 
@@ -192,7 +192,7 @@ GET /v2/api/Data/
 ```
 
 
-## :mag: Facturas Personal
+## :iphone: Facturas Personal
 
 Listado de Facturas
 
