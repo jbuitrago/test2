@@ -43,44 +43,149 @@ En la siguiente tabla se listan los diferentes casos de uso que soporta actualem
 
 |              Modulo               |                                     Nombre                                      |                          Descripcion                           |
 | --- | --- | --- |
-| `Clientes` | [Tipos documento](#mag-tipos-documento-clientes) |  |
-| `Fibercorp` | [Contratos](#mag-contratos-fibercorp) |  |
-| `Fibercorp` | [Facturas](#mag-facturas-fibercorp) |  |
-| `Fibercorp` | [Notas de Credito](#mag-notas-de-credito-fibercorp) |  |
-| `Fibercorp` | [PDF](#mag-factura-fibercorp-pdf) |  |
-| `Telecom Datos` | [Acuerdos](#mag-acuerdos-telecom-datos) |  |
-| `Telecom Datos` | [Facturas](#mag-facturas-telecom-datos) |  |
-| `Telecom Datos` | [Notas de Crédito](#mag-notas-de-credito-telecom-datos) |  |
-| `Telecom Datos` | [Notas de Débito](#mag-notas-de-debito-telecom-datos) |  |
-| `Telecom Datos` | [Facturas PDF](#mag-facturas-telecom-datos-pdf) |  |
-| `Personal` | [Referencias de Pago](#mag-referencias-de-pago-personal) |  |
-| `Personal` | [Facturas ](#mag-facturas-personal) |  |
+| `Clientes` | [Tipos documento](#mag-tipos-documento-clientes) |  Listado de Tipos de Documento|
+| `Clientes` | [Cliente](#mag-clientes) | Busqueda de Cliente |
+| `Fibercorp` | [Contratos](#mag-contratos-fibercorp) | Listado de Contratos |
+| `Fibercorp` | [Facturas](#mag-facturas-fibercorp) | Listado de Facturas de Fibercorp |
+| `Fibercorp` | [Notas de Credito](#mag-notas-de-credito-fibercorp) |  Listado de Notas de Crédito |
+| `Fibercorp` | [PDF](#mag-factura-fibercorp-pdf) | Factura en PDF |
+| `Telecom Datos` | [Acuerdos](#mag-acuerdos-telecom-datos) | Listado de Acuerdos de Telecom Datos |
+| `Telecom Datos` | [Facturas](#mag-facturas-telecom-datos) | Listado de Facturas de Telecom Datos |
+| `Telecom Datos` | [Notas de Crédito](#mag-notas-de-credito-telecom-datos) | Listado de Notas de Crédito de Telecom Datos |
+| `Telecom Datos` | [Notas de Débito](#mag-notas-de-debito-telecom-datos) |Listado de Notas de Debito de Telecom Datos |
+| `Telecom Datos` | [Facturas PDF](#mag-facturas-telecom-datos-pdf) | Telecomo Datos en PDF |
+| `Personal` | [Referencias de Pago](#mag-referencias-de-pago-personal) | Listado de Referencias de Pago|
+| `Personal` | [Facturas ](#mag-facturas-personal) | Facturas PDF |
 
 
-## :mag: Tipos documento 
+## :mag: Tipos documento clientes
+
+Listado de Tipos de Documento 
+
+```
+GET /v2/api/Data/tiposDocumentosSearch
+
+```
+
+## :mag: Clientes
+
+Busqueda de Cliente por tipo de documento
+
+```
+GET /v2/api/Data//v2/api/Data/getClienteByCuicBaseInstalada?cuic=cuic
+
+```
 
 ## :mag: Contratos Fibercorp
 
+Listado de Contratos 
+
+```
+GET /v2/api/Data/
+
+```
+
 ## :mag: Facturas Fibercorp
+
+Listado de Facturas 
+
+```
+GET /v2/api/Data/tiposDocumentosSearch
+
+```
 
 ## :mag: Notas de credito Fibercorp
 
+Listado de Notas de credito
+
+```
+GET /v2/api/Data/tiposDocumentosSearch
+
+```
+
 ## :mag: Factura Fibercorp PDF
 
-## :mag: Acuerdos Telecom 
+Obtener Factura en PDF
+
+```
+GET /v2/api/Data/tiposDocumentosSearch
+
+```
+
+## :mag: Acuerdos Telecom Datos
+
+Listado de Acuerdos
+
+```
+GET /v2/api/Data/
+
+```
+
 
 ## :mag: Facturas Telecom Datos
 
+Listado de Facturas
+
+```
+GET /v2/api/Data/
+
+```
+
+
 ## :mag: Notas de credito Telecom Datos
+
+Listado de Notas de Crédito
+
+```
+GET /v2/api/Data/
+
+```
+
 
 ## :mag: Notas de debito Telecom Datos
 
+Listado de Notas de Débito
+
+```
+GET /v2/api/Data/
+
+```
+
+
 ## :mag: Facturas Telecom Datos PDF
+
+Obtener Factura en PDF
+
+```
+GET /v2/api/Data/tiposDocumentosSearch
+
+```
+
 
 ## :mag: Referencias de pago Personal
 
+Listado de Referencias de Pago
+
+```
+GET /v2/api/Data/
+
+```
+
 ## :mag: Facturas Personal
 
+Listado de Facturas
+
+```
+GET /v2/api/Data/
+
+```
+
+
+
+
+## :green_book: Casos de uso para testing
+
+En la siguiente lista, se muestra el orden y descripción de cada paso a probar:
 
 
 
@@ -90,19 +195,21 @@ En la siguiente tabla se listan los diferentes casos de uso que soporta actualem
 Buscar un cliente para ver las facturas puede utilizar la opción Nro Documento y utilizar alguno de los  de los siguientes  cuit : 30500010084 , 30500006613, 20260490347, 20295944537, 30500051309, 30500057102,30500094156,  30500247882, 30500487379
 
 
-
 ## :computer: FiberCorp
+
+En el modulode Fibercorp puede consultar facturas y/o Notas de credito utilizando el filtro de Contratos.
 
 ## :phone: Telecom Voz
 
+Este módulo no esta desarrollado actualmente.
+
 ## :phone: Telecom Datos
+
+En el modulo de Telecom Datos puede consultar facturas o Notas de credito utilizando el filtro de Acuerdos.
 
 ## :iphone: Personal
 
-
-## :green_book: Casos de uso para testing
-
-En la siguiente lista, se muestra el orden y descripción de cada paso a probar:
+En el modulo de Personal puede consultar facturas o Notas de credito utilizando el filtro de Acuerdos.
 
 
 
