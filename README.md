@@ -55,6 +55,7 @@ En la siguiente tabla se listan los diferentes casos de uso que soporta actualem
 | `Telecom Datos` | [Notas de Débito](#mag-notas-de-debito-telecom-datos) |Listado de Notas de Debito de Telecom Datos |
 | `Telecom Datos` | [Facturas PDF](#mag-facturas-telecom-datos-pdf) | Telecomo Datos en PDF |
 | `Personal` | [Referencias de Pago](#mag-referencias-de-pago-personal) | Listado de Referencias de Pago|
+| `Personal` | [Números de Linea](#mag-numeros-de-linea-personal) | Listado de Núumeros de Línea|
 | `Personal` | [Facturas ](#mag-facturas-personal) | Facturas PDF |
 
 
@@ -87,7 +88,7 @@ GET /v2/api/Data/
 
 ## :mag: Facturas Fibercorp
 
-Listado de Facturas 
+El servicio retorna la información de las facturas para clientes de Open para los servicios de televisión por cable y conectividad a internet.
 
 ```
 GET /v2/api/Data/tiposDocumentosSearch
@@ -164,19 +165,28 @@ GET /v2/api/Data/tiposDocumentosSearch
 
 ## :mag: Referencias de pago Personal
 
-Listado de Referencias de Pago
+El servicio retorna información para obtener documentos (facturas, notas decrédito o debito) de un cliente.Se podrá llamar solo por cuit y retornara todas las referencia de pago.Se podrá llamar con cuit y referencia de pago para obtener los números de líneas
+
+```
+GET /v2/api/search/billingmanagement.getinfomobilecustomerdata
+
+```
+## :mag: Números de Linea Personal
+
+El servicio retorna información para obtener documentos (facturas, notas decrédito o debito) de un cliente.Se podrá llamar solo por cuit y retornara todas las referencia de pago.Se podrá llamar con cuit y referencia de pago para obtener los números de líneas
 
 ```
 GET /v2/api/Data/
 
 ```
+
 
 ## :mag: Facturas Personal
 
 Listado de Facturas
 
 ```
-GET /v2/api/Data/
+GET /v2/api/search/billingmanagement.getinfomobilelistresources
 
 ```
 
