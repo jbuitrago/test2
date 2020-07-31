@@ -41,15 +41,16 @@ Puedes encontrar la documentación sobre cada endpoint y cada modelo asociado a 
 
 En la siguiente tabla se listan los diferentes casos de uso que soporta actualemente la API:
 
-|              Modulo               |                                     Nombre                                      |                          Descripcion                           |
+|              Modulo               |                                     Nombre                                      |                          Descripcion                           | Constante
 | --- | --- | --- |
-| `Clientes` | [Tipos documento](#mag-tipos-documento-clientes) |  Listado de Tipos de Documento|
-| `Clientes` | [Cliente](#mag-clientes) | Busqueda de Cliente |
-| `Fibercorp` | [Contratos](#mag-contratos-fibercorp) | Listado de Contratos |
-| `Fibercorp` | [Facturas](#mag-facturas-fibercorp) | Listado de Facturas de Fibercorp |
-| `Fibercorp` | [Notas de Credito](#mag-notas-de-credito-fibercorp) |  Listado de Notas de Crédito |
-| `Fibercorp` | [PDF](#mag-factura-fibercorp-pdf) | Factura en PDF |
-| `Telecom Datos` | [Acuerdos](#mag-acuerdos-telecom-datos) | Listado de Acuerdos de Telecom Datos |
+| `Clientes` | [Tipos documento](#mag-tipos-documento-clientes) |  Listado de Tipos de Documento| urlTiposDocumentosSearch
+| `Clientes` | [Cliente](#mag-clientes) | Busqueda de Cliente | urlCuicSearch
+| `Fibercorp` | [Contratos](#mag-contratos-fibercorp) | Listado de Contratos |urlContractSearch
+| `Fibercorp` | [Facturas](#mag-facturas-fibercorp) | Listado de Facturas de Fibercorp | urlGetInfoMobileListResource 
+| `Fibercorp` | [Notas de Credito](#mag-notas-de-credito-fibercorp) |  Listado de Notas de Crédito |FibercorpFacturaCreditNotes
+| `Fibercorp` | [PDF](#mag-factura-fibercorp-pdf) | Factura en PDF |  urlObtainPDFFibercorpReal
+| `Fibercorp` | [PDF](#mag-cotizador-dolar) |Cotizacion Dolar |  getCotizadorDolarData
+| `Telecom Datos` | [Acuerdos](#mag-acuerdos-telecom-datos) | Listado de Acuerdos de Telecom Datos | urlAgreementsSearch
 | `Telecom Datos` | [Facturas](#mag-facturas-telecom-datos) | Listado de Facturas de Telecom Datos |
 | `Telecom Datos` | [Notas de Crédito](#mag-notas-de-credito-telecom-datos) | Listado de Notas de Crédito de Telecom Datos |
 | `Telecom Datos` | [Notas de Débito](#mag-notas-de-debito-telecom-datos) |Listado de Notas de Debito de Telecom Datos |
@@ -57,7 +58,6 @@ En la siguiente tabla se listan los diferentes casos de uso que soporta actualem
 | `Personal` | [Referencias de Pago](#mag-referencias-de-pago-personal) | Listado de Referencias de Pago|
 | `Personal` | [Números de Linea](#mag-numeros-de-linea-personal) | Listado de Núumeros de Línea|
 | `Personal` | [Facturas ](#mag-facturas-personal) | Facturas PDF |
-
 
 ## :mag: Tipos documento clientes
 
@@ -82,7 +82,7 @@ GET /v2/api/Data//v2/api/Data/getClienteByCuicBaseInstalada?cuic=cuic
 Listado de Contratos 
 
 ```
-GET /v2/api/Data/
+GET /v2/api/Da/v2/api/search/fibercorp_contratosbytoken
 
 ```
 
@@ -91,9 +91,10 @@ GET /v2/api/Data/
 El servicio retorna la información de las facturas para clientes de Open para los servicios de televisión por cable y conectividad a internet.
 
 ```
-GET /v2/api/Data/tiposDocumentosSearch
+GET /v2/api/search/billingmanagement.invoices
 
 ```
+
 
 ## :mag: Notas de credito Fibercorp
 
@@ -113,12 +114,21 @@ GET /v2/api/Data/tiposDocumentosSearch
 
 ```
 
+## :mag: Cotizador Dolar
+
+Obtener todas las cotizaciones del dolar
+
+```
+GET /v2/api/Data/getCotizadorDolarData
+
+```
+
 ## :mag: Acuerdos Telecom Datos
 
 Listado de Acuerdos
 
 ```
-GET /v2/api/Data/
+GET /v2/api/search/billingmanagement.getinfofijadatosresources
 
 ```
 
