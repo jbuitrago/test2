@@ -45,20 +45,20 @@ En la siguiente tabla se listan los diferentes casos de uso que soporta actualem
 | --- | --- | --- | --- |
 | `Clientes` | [Tipos documento](#mag-tipos-documento-clientes) |  Listado de Tipos de Documento| urlTiposDocumentosSearch
 | `Clientes` | [Cliente](#mag-clientes) | Busqueda de Cliente | urlCuicSearch
-| `Fibercorp` | [Contratos](#mag-contratos-fibercorp) | Listado de Contratos |urlContractSearch
-| `Fibercorp` | [Facturas](#mag-facturas-fibercorp) | Listado de Facturas de Fibercorp | urlGetInfoMobileListResource 
-| `Fibercorp` | [Notas de Credito](#mag-notas-de-credito-fibercorp) |  Listado de Notas de Crédito |FibercorpFacturaCreditNotes
-| `Fibercorp` | [Facturas PDF](#mag-factura-fibercorp-pdf) | Factura en PDF |  urlObtainPDFFibercorpReal
-| `Fibercorp` | [DOLAR](#mag-cotizador-dolar) |Cotizacion Dolar |  getCotizadorDolarData
+| `Fibercorp` | [Contratos](#computer-contratos-fibercorp) | Listado de Contratos |urlContractSearch
+| `Fibercorp` | [Facturas](#computer-facturas-fibercorp) | Listado de Facturas de Fibercorp | urlGetInfoMobileListResource 
+| `Fibercorp` | [Notas de Credito](#computer-notas-de-credito-fibercorp) |  Listado de Notas de Crédito |FibercorpFacturaCreditNotes
+| `Fibercorp` | [Facturas PDF](#computer-factura-fibercorp-pdf) | Factura en PDF |  urlObtainPDFFibercorpReal
+| `Fibercorp` | [DOLAR](#computer-cotizador-dolar) |Cotizacion Dolar |  getCotizadorDolarData
 | `Telecom Datos` | [Acuerdos](#mag-acuerdos-telecom-datos) | Listado de Acuerdos de Telecom Datos | urlAgreementsSearch
-| `Telecom Datos` | [Facturas](#mag-facturas-telecom-datos) | Listado de Facturas de Telecom Datos |
-| `Telecom Datos` | [Notas de Crédito](#mag-notas-de-credito-telecom-datos) | Listado de Notas de Crédito de Telecom Datos |
-| `Telecom Datos` | [Notas de Débito](#mag-notas-de-debito-telecom-datos) |Listado de Notas de Debito de Telecom Datos |
-| `Telecom Datos` | [Facturas PDF](#mag-facturas-telecom-datos-pdf) | Telecom Datos en PDF |
-| `Personal` | [Referencias de Pago](#mag-referencias-de-pago-personal) | Listado de Referencias de Pago|
-| `Personal` | [Números de Linea](#mag-numeros-de-linea-personal) | Listado de Núumeros de Línea|
-| `Personal` | [Facturas ](#mag-facturas-personal) | Facturas |
-| `Personal` | [Facturas PDF](#mag-facturas-personal-pdf) | Personal en PDF |
+| `Telecom Datos` | [Facturas](#mag-facturas-telecom-datos) | Listado de Facturas de Telecom Datos | urlAgreementsSearch
+| `Telecom Datos` | [Notas de Crédito](#mag-notas-de-credito-telecom-datos) | Listado de Notas de Crédito de Telecom Datos | urlAgreementsSearch
+| `Telecom Datos` | [Notas de Débito](#mag-notas-de-debito-telecom-datos) |Listado de Notas de Debito de Telecom Datos | urlAgreementsSearch
+| `Telecom Datos` | [Facturas PDF](#mag-facturas-telecom-datos-pdf) | Telecom Datos en PDF | urlObtainPdfMobileResources
+| `Personal` | [Referencias de Pago](#mag-referencias-de-pago-personal) | Listado de Referencias de Pago| urlReferencesSearch
+| `Personal` | [Números de Linea](#mag-numeros-de-linea-personal) | Listado de Núumeros de Línea| urlReferencesSearch
+| `Personal` | [Facturas ](#mag-facturas-personal) | Facturas | urlGetInfoMobileListResource
+| `Personal` | [Facturas PDF](#mag-facturas-personal-pdf) | Personal en PDF | urlObtainPdfMobileResources
 
 ## :mag: Tipos documento clientes
 
@@ -78,7 +78,7 @@ GET /v2/api/Data//v2/api/Data/getClienteByCuicBaseInstalada?cuic=cuic
 
 ```
 
-## :mag: Contratos Fibercorp
+## :computer: Contratos Fibercorp
 
 Listado de Contratos 
 
@@ -87,7 +87,7 @@ GET /v2/api/Da/v2/api/search/fibercorp_contratosbytoken
 
 ```
 
-## :mag: Facturas Fibercorp
+## :computer: Facturas Fibercorp
 
 El servicio retorna la información de las facturas para clientes de Open para los servicios de televisión por cable y conectividad a internet.
 
@@ -97,7 +97,7 @@ GET /v2/api/search/billingmanagement.invoices
 ```
 
 
-## :mag: Notas de credito Fibercorp
+## :computer: Notas de credito Fibercorp
 
 Listado de Notas de credito
 
@@ -106,7 +106,7 @@ GET /v2/api/Data/tiposDocumentosSearch
 
 ```
 
-## :mag: Factura Fibercorp PDF
+## :computer: Factura Fibercorp PDF
 
 Obtener Factura en PDF
 
@@ -115,7 +115,7 @@ GET /v2/api/Data/tiposDocumentosSearch
 
 ```
 
-## :mag: Cotizador Dolar
+## :computer: Cotizador Dolar
 
 Obtener todas las cotizaciones del dolar
 
@@ -139,7 +139,7 @@ GET /v2/api/search/billingmanagement.getinfofijadatosresources
 Listado de Facturas
 
 ```
-GET /v2/api/Data/
+GET /v2/api/search/billingmanagement.getinfofijadatosresources
 
 ```
 
@@ -169,7 +169,7 @@ GET /v2/api/Data/
 Obtener Factura en PDF
 
 ```
-GET /v2/api/Data/tiposDocumentosSearch
+GET /v2/api/search/billingmanagement.getinfofijadatosresources
 
 ```
 
@@ -197,7 +197,7 @@ GET /v2/api/Data/
 Listado de Facturas
 
 ```
-GET /v2/api/search/billingmanagement.getinfomobilelistresources
+GET  /v2/api/search/billingmanagement.obtainpdfmobileresources
 
 ```
 
