@@ -48,16 +48,17 @@ En la siguiente tabla se listan los diferentes casos de uso que soporta actualem
 | `Fibercorp` | [Contratos](#mag-contratos-fibercorp) | Listado de Contratos |urlContractSearch
 | `Fibercorp` | [Facturas](#mag-facturas-fibercorp) | Listado de Facturas de Fibercorp | urlGetInfoMobileListResource 
 | `Fibercorp` | [Notas de Credito](#mag-notas-de-credito-fibercorp) |  Listado de Notas de Crédito |FibercorpFacturaCreditNotes
-| `Fibercorp` | [PDF](#mag-factura-fibercorp-pdf) | Factura en PDF |  urlObtainPDFFibercorpReal
-| `Fibercorp` | [PDF](#mag-cotizador-dolar) |Cotizacion Dolar |  getCotizadorDolarData
+| `Fibercorp` | [Facturas PDF](#mag-factura-fibercorp-pdf) | Factura en PDF |  urlObtainPDFFibercorpReal
+| `Fibercorp` | [DOLAR](#mag-cotizador-dolar) |Cotizacion Dolar |  getCotizadorDolarData
 | `Telecom Datos` | [Acuerdos](#mag-acuerdos-telecom-datos) | Listado de Acuerdos de Telecom Datos | urlAgreementsSearch
 | `Telecom Datos` | [Facturas](#mag-facturas-telecom-datos) | Listado de Facturas de Telecom Datos |
 | `Telecom Datos` | [Notas de Crédito](#mag-notas-de-credito-telecom-datos) | Listado de Notas de Crédito de Telecom Datos |
 | `Telecom Datos` | [Notas de Débito](#mag-notas-de-debito-telecom-datos) |Listado de Notas de Debito de Telecom Datos |
-| `Telecom Datos` | [Facturas PDF](#mag-facturas-telecom-datos-pdf) | Telecomo Datos en PDF |
+| `Telecom Datos` | [Facturas PDF](#mag-facturas-telecom-datos-pdf) | Telecom Datos en PDF |
 | `Personal` | [Referencias de Pago](#mag-referencias-de-pago-personal) | Listado de Referencias de Pago|
 | `Personal` | [Números de Linea](#mag-numeros-de-linea-personal) | Listado de Núumeros de Línea|
-| `Personal` | [Facturas ](#mag-facturas-personal) | Facturas PDF |
+| `Personal` | [Facturas ](#mag-facturas-personal) | Facturas |
+| `Personal` | [Facturas PDF](#mag-facturas-personal-pdf) | Personal en PDF |
 
 ## :mag: Tipos documento clientes
 
@@ -207,6 +208,14 @@ GET /v2/api/search/billingmanagement.getinfomobilelistresources
 
 En la siguiente lista, se muestra el orden y descripción de cada paso a probar:
 
+|              Modulo               | Caso de Uso
+| --- | --- |
+| `Clientes` |  [Buscar Cliente](#mag-buscar-cliente)
+| `Fibercorp` | [Fibercorp](#mag-fibercorp) 
+| `Telecom Voz` | [Telecom Voz](#mag-telecom-voz) 
+| `Telecom Datos` | [TelecomDatos](#mag-telecom-datos)
+| `Personal` | [Personal](#mag-personal) 
+
 
 
 
@@ -218,6 +227,8 @@ Buscar un cliente para ver las facturas puede utilizar la opción Nro Documento 
 ## :computer: FiberCorp
 
 En el modulode Fibercorp puede consultar facturas y/o Notas de credito utilizando el filtro de Contratos.
+
+
 
 ## :phone: Telecom Voz
 
