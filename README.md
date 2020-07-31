@@ -42,7 +42,7 @@ Puedes encontrar la documentación sobre cada endpoint y cada modelo asociado a 
 En la siguiente tabla se listan los diferentes casos de uso que soporta actualemente la API:
 
 |              Modulo               |                                     Nombre                                      |                          Descripcion                           | Constante
-| --- | --- | --- |
+| --- | --- | --- | --- |
 | `Clientes` | [Tipos documento](#mag-tipos-documento-clientes) |  Listado de Tipos de Documento| urlTiposDocumentosSearch
 | `Clientes` | [Cliente](#mag-clientes) | Busqueda de Cliente | urlCuicSearch
 | `Fibercorp` | [Contratos](#mag-contratos-fibercorp) | Listado de Contratos |urlContractSearch
