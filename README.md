@@ -70,7 +70,7 @@ Este es el modulo principal del proyecto y contiene todos los componentes y serv
 
 ##### Composición
 
-````
+````javascript
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { AppRoutingModule } from './app-routing.module';
@@ -105,6 +105,180 @@ export class AppModule { }
 ## :blue_book: Documentación de la API
 
 Puedes encontrar la documentación sobre cada endpoint y cada modelo asociado a los mismos en el siguiente [link](https://gestiondesa.fibercorp.com.ar/v2/swagger).
+
+
+
+
+
+## :green_book: Secciones
+
+La aplicacion se compone de las siguientes secciones:
+
+|              Modulo               | Caso de Uso
+| --- | --- |
+| `Clientes` |  [Buscar Cliente](#buscar-cliente)
+| `Fibercorp` | [Fibercorp](#fibercorp) 
+| `Telecom Voz` | [Telecom Voz](#telecom-voz) 
+| `Telecom Datos` | [TelecomDatos](#telecom-datos)
+| `Personal` | [Personal](#personal) 
+
+
+
+
+## Buscar Cliente
+
+Es la seccion principal y sirve para buscar un cliente ingresando el Tipo de Documento y  Nro Documento: 30500010084 , 30500006613, 20260490347, 20295944537, 30500051309, 30500057102,30500094156,  30500247882, 30500487379
+
+
+### Componente
+
+| Componente | Descripción |
+|--------|--------
+|CuicComponent|Este componente se usa para buscar un cliente|
+
+
+##### Composición
+
+
+```` javascript
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { MatSnackBar } from '@angular/material';
+import { AppConstants } from 'src/app/app.constants';
+import { CuicSearchServiceService } from 'src/app/services/cuic-search-service.service';
+import { ClienteModel } from 'src/app/models/clientes.model';
+import { Subscription } from 'rxjs';
+
+@Component({
+  selector: 'app-cuic',
+  templateUrl: './cuic.component.html',
+  styleUrls: ['./cuic.component.scss']
+})
+export class CuicComponent implements OnInit, OnDestroy {
+  // Declaro la letiable para saber si es GOL o Desktop, por default es Desktop
+  isGestionEnviroment: boolean;
+  cliente: ClienteModel = null;
+  tiposDocumentos: any = [];
+  cuicSearched: string = "";
+  typeCuicSearched: string = "";
+  subscriptions = new Subscription();
+
+  // Declaro el formulario de busqueda del CUIC
+  public cuicForm: FormGroup;
+
+  constructor(
+    private formBuilder: FormBuilder,
+    public snackBar: MatSnackBar,
+    public CuicSearchServiceService: CuicSearchServiceService
+  ) {
+    // Seteo el flag para saber si es GOL o DESKTOP
+    this.isGestionEnviroment = AppConstants.isGestionEnviroment;
+    this.buildForm();
+  }
+
+  buildForm() {
+
+    // Armo el FormBuild para las validaciones de los campos
+    this.cuicForm = this.formBuilder.group({
+      cuic: ['', [Validators.required, Validators.minLength(11), Validators.maxLength(11)]],
+      tipocuic: ['', [Validators.required]]
+    });
+  }
+
+  ngOnInit(): void {
+    /**
+     * Chequeo el ambiente desde donde estoy ejecutando la App ( GOL / DESKTOP)
+     * Si es GOL, debo directamente ejecutar la App, si es DESKTOP debo mostrar el form de busqueda y cargar los tipo de documentos.
+     **/
+    if (!this.isGestionEnviroment) {
+      const subscription = this.CuicSearchServiceService.getDocumentsType().subscribe(data => {
+        this.tiposDocumentos = data;
+      });
+      this.subscriptions.add(subscription);
+    }
+  }
+
+  // Funcion encargada de la busqueda del CUIC solicitado.
+  onSearch_Click() {
+    if (this.cuicForm.dirty && this.cuicForm.valid) {
+      let cuicValue = this.cuicForm.get(['tipocuic']).value;
+      if (cuicValue == '-1' || cuicValue == '00') {
+        cuicValue = '';
+      }
+      this.cuicSearched = cuicValue + this.cuicForm.get(['cuic']).value;
+      const subscription = this.CuicSearchServiceService.getClientByCuic(this.cuicSearched.toString())
+        .subscribe(data => {
+          this.cliente = data;
+          this.CuicSearchServiceService.showApp = false;
+          AppConstants.clientData = data;
+        });
+      this.subscriptions.add(subscription);
+    }
+  }
+
+  // Funcion que se encarga de no dejar escribir codigos especiales, no permite el ENTER.
+  cuic_KeyUp($event) {
+    if ($event.which != '37' && $event.which != '39') {
+      let result = this.cuicForm.get(['cuic']).value.replace(/[^0-9]/g, '');
+      this.cuicForm.get(['cuic']).setValue(result);
+    }
+  }
+
+  // Funcion que forma al Nombre del cliente encontrado
+  getNameClient(cliente) {
+    return `${cliente.NOMBRE_CLIENTE} ${cliente.APELLIDO_CLIENTE}`;
+  }
+
+  // Funcion que se encarga de disparar la App en base al cuic elegido
+  clienteNameOn_Click(cuic) {
+    AppConstants.cuic = cuic;
+    this.CuicSearchServiceService.showApp = true;
+  }
+
+  // Obtengo el texto del item seleccionado del combo Tipo de Documento
+  itemSelected(item) {
+    this.cliente = null; // debo limpiar en cada cambio el resultado obtenido, ya que corresponde a una nueva busqueda por hacer.
+    this.typeCuicSearched = item.source.selected._element.nativeElement.innerText;
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.unsubscribe();
+  }
+
+}
+
+````
+
+
+### Servicio
+
+
+
+````
+
+````
+
+
+## FiberCorp
+
+En el modulode Fibercorp puede consultar facturas y/o Notas de credito utilizando el filtro de Contratos.
+
+
+
+## Telecom Voz
+
+Este módulo no esta desarrollado actualmente.
+
+## Telecom Datos
+
+En el modulo de Telecom Datos puede consultar facturas o Notas de credito utilizando el filtro de Acuerdos.
+
+## Personal
+
+En el modulo de Personal puede consultar facturas o Notas de credito utilizando el filtro de Acuerdos.
+
+
+
 
 ## :orange_book: Casos de uso 
 
@@ -269,58 +443,3 @@ Listado de Facturas
 GET  /v2/api/search/billingmanagement.obtainpdfmobileresources
 
 ```
-
-
-
-
-## :green_book: Secciones
-
-La aplicacion se compone de las siguientes secciones:
-
-|              Modulo               | Caso de Uso
-| --- | --- |
-| `Clientes` |  [Buscar Cliente](#mag-buscar-cliente)
-| `Fibercorp` | [Fibercorp](#mag-fibercorp) 
-| `Telecom Voz` | [Telecom Voz](#mag-telecom-voz) 
-| `Telecom Datos` | [TelecomDatos](#mag-telecom-datos)
-| `Personal` | [Personal](#mag-personal) 
-
-
-
-
-## :mag: Buscar Cliente
-
-Es la seccion principal y sirve para buscar un cliente ingresando el Tipo de Documento y  Nro Documento: 30500010084 , 30500006613, 20260490347, 20295944537, 30500051309, 30500057102,30500094156,  30500247882, 30500487379
-
-
-### Componente
-
-
-
-### Servicio
-
-
-
-
-
-## :computer: FiberCorp
-
-En el modulode Fibercorp puede consultar facturas y/o Notas de credito utilizando el filtro de Contratos.
-
-
-
-## :phone: Telecom Voz
-
-Este módulo no esta desarrollado actualmente.
-
-## :phone: Telecom Datos
-
-En el modulo de Telecom Datos puede consultar facturas o Notas de credito utilizando el filtro de Acuerdos.
-
-## :iphone: Personal
-
-En el modulo de Personal puede consultar facturas o Notas de credito utilizando el filtro de Acuerdos.
-
-
-
-
