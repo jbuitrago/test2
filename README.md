@@ -350,7 +350,6 @@ En el modulode Fibercorp puede consultar facturas y/o Notas de credito utilizand
 
 ##### BillFibercorpComponent
 
-
 ````javascript
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
@@ -691,7 +690,110 @@ export class BillFibercorpComponent implements OnInit, OnDestroy {
 
 ### Servicios
 
+| Servicio | Descripción |
+|--------|--------
+|getAgreements|Listado de Acuerdos|
+|getCustomers|Listado de Clientes|
+|getInvoice|Listado de Facturas|
+|getPdf|Obtenciion PDF por Letra y Nro de Documento|
 
+````javascript
+import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { AppConstants } from 'src/app/app.constants';
+import 'rxjs/add/operator/map';
+import "rxjs/add/operator/catch";
+import { GlobalServicesConfiguration } from './global-services-config';
+import { FacturasTelecomDatosModel } from 'src/app/models/facturastelecomdatos.model';
+import { AcuerdosModel } from 'src/app/models/acuerdos.model';
+import { CustomerModel } from 'src/app/models/customer.model';
+import { PdfModel } from 'src/app/models/pdf.model';
+@Injectable({
+  providedIn: 'root'
+})
+export class TelecomdatosSearchServiceService extends GlobalServicesConfiguration {
+  showBill: boolean = false;
+  showPdf: boolean = false;
+  constructor(
+    private _http: HttpClient
+  ) {
+    super()
+  }
+
+  //Acuerdos
+  getAgreements(nroCliente: string, quantity: number) {
+    let _url = `${this.getBaseUrl()}${AppConstants.urlAgreementsSearch}?nroCliente=${nroCliente}&cantFacturasPorAcuerdo=${quantity}`
+
+    return this._http.get<AcuerdosModel>(_url,
+      {
+        headers: this.head,
+        withCredentials: true
+      }
+    )
+      .map((data: any) => {
+        return data.httpCode === "200" ? data.response.GetFacturaListResponse.GetFacturaListResult.Acuerdos.Acuerdo : [];
+      })
+      .catch(this.handleError);
+  };
+
+  getCustomers(cuit: string) {
+    let _url = `${this.getBaseUrl()}${AppConstants.urlGetInfoFijaCustomerData}?cuit=${cuit}`
+    return this._http.get<CustomerModel>(_url,
+      {
+        headers: this.head,
+        withCredentials: true
+      }
+    )
+      .map(data => {
+        return data.response;
+      })
+      .catch(this.handleError);
+  };
+
+  //Facturas
+  getInvoice(nroCliente: string, quantity: number, agreement: string, voucher: string) {
+    let _url = `${this.getBaseUrl()}${AppConstants.urlAgreementsSearch}?nroCliente=${nroCliente}&cantFacturasPorAcuerdo=${quantity}`
+    return this._http.get<FacturasTelecomDatosModel>(_url,
+      {
+        headers: this.head,
+        withCredentials: true
+      }
+    )
+      .map(data => {
+        let dataInvoice = data.response.GetFacturaListResponse.GetFacturaListResult.Acuerdos.Acuerdo;
+        let Facturas;
+        dataInvoice.forEach(element => {
+          if (element.Numero == agreement) {
+            //ALL
+            if (voucher == 'T' || voucher == '') {
+              Facturas = element.Facturas.Factura;
+            } else {
+              Facturas = element.Facturas.Factura.filter(factura => factura.Tipo == voucher);
+            }
+          }
+        });
+        // return Facturas as FacturasTelecomDatosModel;
+        return Facturas;
+      })
+      .catch(this.handleError);
+  };
+
+  getPdf(nroDocumento: number, letraDocumento: string) {
+    let _url = `${this.getBaseUrl()}${AppConstants.urlObtainPdfFijadatosResources}?nroDocumento=${nroDocumento}&letraDocumento=${letraDocumento}`
+    return this._http.get<PdfModel>(_url,
+      {
+        headers: this.head,
+        withCredentials: true
+      }
+    )
+      .map(data => {
+        return data.response.GetFacturaImageResponse;
+      })
+      .catch(this.handleError);
+  };
+}
+
+````
 
 
 # Telecom Voz
@@ -708,7 +810,24 @@ En el modulo de Telecom Datos puede consultar facturas o Notas de credito utiliz
 
 En el modulo de Personal puede consultar facturas o Notas de credito utilizando el filtro de Acuerdos.
 
+### Listado de Componentes
 
+| Componente | Descripción |
+|--------|--------
+|BillFibercorpComponent|Este componente se usa para mostrar el listado facturas de FiberCorp|
+
+
+##### BillFibercorpComponent
+
+````javascript
+````
+
+### Servicios
+
+
+````javascript
+
+````
 
 
 ## :orange_book: Casos de uso 
