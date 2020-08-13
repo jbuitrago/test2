@@ -47,7 +47,7 @@ npm run start - yarn start
 npm run build-prod - yarn run build-prod  
 ```
 
-### Arquitectura del proyecto
+### :blue_book: Arquitectura del proyecto
 
 . La estructura del proyecto esta compuesto de la siguiente manera:
 
@@ -84,7 +84,6 @@ import { BillPersonalComponent } from './components/bill-personal/bill-personal.
   declarations: [
     AppComponent,
     CuicComponent,
-    AppWrapperComponent,
     BillFibercorpComponent,
     BillTelecomvozComponent,
     BillTelecomdatosComponent,
@@ -102,8 +101,6 @@ import { BillPersonalComponent } from './components/bill-personal/bill-personal.
 export class AppModule { }
 
 ````
-
-
 
 ## :blue_book: Documentación de la API
 
@@ -276,9 +273,9 @@ GET  /v2/api/search/billingmanagement.obtainpdfmobileresources
 
 
 
-## :green_book: Casos de uso para testing
+## :green_book: Secciones
 
-En la siguiente lista, se muestra el orden y descripción de cada paso a probar:
+La aplicacion se compone de las siguientes secciones:
 
 |              Modulo               | Caso de Uso
 | --- | --- |
@@ -293,7 +290,17 @@ En la siguiente lista, se muestra el orden y descripción de cada paso a probar:
 
 ## :mag: Buscar Cliente
 
-Buscar un cliente para ver las facturas puede utilizar la opción Nro Documento y utilizar alguno de los  de los siguientes  cuit : 30500010084 , 30500006613, 20260490347, 20295944537, 30500051309, 30500057102,30500094156,  30500247882, 30500487379
+Es la seccion principal y sirve para buscar un cliente ingresando el Tipo de Documento y  Nro Documento: 30500010084 , 30500006613, 20260490347, 20295944537, 30500051309, 30500057102,30500094156,  30500247882, 30500487379
+
+
+### Componente
+
+
+
+### Servicio
+
+
+
 
 
 ## :computer: FiberCorp
