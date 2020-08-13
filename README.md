@@ -252,6 +252,7 @@ export class CuicComponent implements OnInit, OnDestroy {
 
 ### Servicios
 
+Esta sección utiliza los siguientes servicios:
 
 | Servicio | Descripción |
 |--------|--------
@@ -339,7 +340,8 @@ export class CuicSearchServiceService extends GlobalServicesConfiguration {
 
 ## FiberCorp
 
-En el modulode Fibercorp puede consultar facturas y/o Notas de credito utilizando el filtro de Contratos.
+En el modulode Fibercorp puede consultar facturas y/o Notas de credito utilizando el filtro de Contratos y Tipo de Comprobante,tambien permite descargar el listado de la grilla a Excel/CSV/PDF.
+
 
 ### Listado de Componentes
 
@@ -804,28 +806,789 @@ Este módulo no esta desarrollado actualmente.
 
 ## Telecom Datos
 
-En el modulo de Telecom Datos puede consultar facturas o Notas de credito utilizando el filtro de Acuerdos.
+En el modulo de Telecom Datos puede consultar facturas o Notas de credito de Telecom datos utilizando el filtro de Acuerdos y Tipo de Comprobante,tambien permite descargar el listado de la grilla a Excel/CSV/PDF.
 
-## Personal
-
-En el modulo de Personal puede consultar facturas o Notas de credito utilizando el filtro de Acuerdos.
 
 ### Listado de Componentes
 
 | Componente | Descripción |
 |--------|--------
-|BillFibercorpComponent|Este componente se usa para mostrar el listado facturas de FiberCorp|
+|BillTelecomdatosComponent|Este componente se usa para mostrar el listado facturas y Notas de crédito de Telecom Datos|
 
-
-##### BillFibercorpComponent
 
 ````javascript
+
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { MatSnackBar, MatDialog, MatDialogConfig } from '@angular/material';
+import { TelecomdatosSearchServiceService } from 'src/app/services/telecomdatos-search-service.service';
+import { AppConstants } from 'src/app/app.constants';
+import { DomSanitizer } from '@angular/platform-browser';
+import { Subscription, Observable, of, } from 'rxjs';
+import { switchMap, take, catchError } from "rxjs/operators";
+import { DownloadFileService } from 'src/app/services/download-file/download-file.service';
+import * as moment from 'moment';
+import { DialogOverviewPDFComponent } from 'src/app/shared/overview-pdf/overview-pdf.component';
+import { ModalLoadingComponent } from 'src/app/shared/modal-waiting/modal-loading.component';
+import { ToastService } from 'src/app/shared/toast/toast.service';
+moment.locale('es');
+
+interface Vouchers {
+  value: string;
+  viewValue: string;
+  single: string;
+}
+
+interface Downloads {
+  value: string;
+  viewValue: string;
+}
+
+@Component({
+  selector: 'app-bill-telecomdatos',
+  templateUrl: './bill-telecomdatos.component.html',
+  styleUrls: ['./bill-telecomdatos.component.scss']
+})
+export class BillTelecomdatosComponent implements OnInit, OnDestroy {
+  pdf: string;
+  agreements: any = [];
+  invoices: any = [];
+  displayedColumns: string[] = ['Tipo', 'Documento', 'Vencimiento', 'Bruto', 'Clase'];
+  selectAgreement = 0;
+  selectVoucher = 'T';
+  vouchers: Vouchers[] = [
+    { value: 'T', viewValue: 'Todos', single: "Todos" },
+    { value: 'FAC', viewValue: 'Facturas', single: "Factura" },
+    { value: 'CRE', viewValue: 'Notas de Crédito', single: "Nota de crédito" },
+    { value: 'DEB', viewValue: 'Notas de Débito', single: "Nota de débito" },
+  ];
+  downloads: Downloads[] = [
+    { value: 'excel', viewValue: 'EXCEL' },
+    { value: 'csv', viewValue: 'CSV' },
+    { value: 'pdf', viewValue: 'PDF' },
+
+  ];
+  showPDF = false;
+  pdfContent;
+  billForm: FormGroup;
+  subscriptions = new Subscription();
+  invoices$ = new Observable<any>();
+
+  constructor(
+    private formBuilder: FormBuilder,
+    public snackBar: MatSnackBar,
+    private sanitizer: DomSanitizer,
+    private dialog: MatDialog,
+    private TelecomdatosSearchServiceService: TelecomdatosSearchServiceService,
+    private downloadFileService: DownloadFileService,
+    private toastService: ToastService
+  ) { }
+
+  ngOnInit() {
+    this.buildForms();
+    this.loadInvoices();
+  }
+
+  loadInvoices() {
+    this.invoices$ =
+      this.TelecomdatosSearchServiceService.getCustomers(AppConstants.clientData.NUMERO_IDENTIFICACION_CLIENTE).pipe(
+        switchMap((customer: any) => {
+          return this.TelecomdatosSearchServiceService.getAgreements(customer.nroCliente, 24)
+        }),
+        take(1),
+        switchMap((result) => {
+          this.selectAgreement = result[0].Numero;
+          this.agreements = result;
+          return this.TelecomdatosSearchServiceService.getCustomers(AppConstants.clientData.NUMERO_IDENTIFICACION_CLIENTE);
+        }),
+        switchMap((customer: any) => {
+          return this.TelecomdatosSearchServiceService.getInvoice(customer.nroCliente, 24, this.selectAgreement.toString(), this.selectVoucher)
+        }),
+        catchError(_ => {
+          return of([])
+        })
+      )
+  }
+
+  buildForms() {
+    this.billForm = this.formBuilder.group({
+      agreement: ['', [Validators.required]],
+      voucher: ['', [Validators.required]],
+      download: ['', [Validators.required]]
+    });
+  }
+
+  onSearch_Click() {
+    this.invoices$ =
+      this.TelecomdatosSearchServiceService.getCustomers(AppConstants.clientData.NUMERO_IDENTIFICACION_CLIENTE).pipe(
+        switchMap((customer: any) => {
+          return this.TelecomdatosSearchServiceService.getInvoice(
+            customer.nroCliente,
+            24,
+            this.billForm.get(['agreement']).value,
+            this.billForm.get(['voucher']).value)
+        })
+      )
+  }
+
+  getPdf(nroDocumento, letraDocumento, clase, importe, fecha) {
+    let item = {
+      nroDocumento,
+      letraDocumento,
+      importe,
+      fecha,
+      type: this.vouchers.find(voucher => voucher.value === letraDocumento).single
+    }
+    const subscription =
+      this.TelecomdatosSearchServiceService.getPdf(nroDocumento, `${letraDocumento}%20${clase}`).subscribe(data => {
+        this.pdf = data.pdfBytes;
+        let file = new Blob([this.base64ToUint8Array(this.pdf)], { type: 'application/pdf' });
+        let fileURL = URL.createObjectURL(file);
+        this.pdfContent = this.sanitizer.bypassSecurityTrustResourceUrl(fileURL);;
+        this.openModal(item);
+      },
+        error => {
+        });
+    this.subscriptions.add(subscription);
+  }
+
+  base64ToUint8Array(base64) {
+    var raw = atob(base64);
+    var uint8Array = new Uint8Array(raw.length);
+    for (var i = 0; i < raw.length; i++) {
+      uint8Array[i] = raw.charCodeAt(i);
+    }
+    return uint8Array;
+  }
+
+  formatDate(date) {
+    return moment(date.replace(/ /g, '/')).format('MM/YYYY');
+  }
+
+  getDialogTitle(item) {
+    return `${item.type}: ${item.nroDocumento} (${this.formatDate(item.fecha)}) - $${item.importe}`;
+  }
+
+  openModal(item) {
+    const dialogConfig = new MatDialogConfig();
+    dialogConfig.disableClose = true;
+    dialogConfig.autoFocus = true;
+    dialogConfig.width = "800px";
+    dialogConfig.height = "590px";
+    dialogConfig.data = {
+      id: 1,
+      title: this.getDialogTitle(item),
+      stream: this.pdfContent
+    };
+    this.dialog.open(DialogOverviewPDFComponent, dialogConfig);
+  }
+
+  openLoadingModal() {
+    const dialogConfig = new MatDialogConfig();
+    dialogConfig.disableClose = true;
+    dialogConfig.autoFocus = true;
+    dialogConfig.width = "200px";
+    dialogConfig.height = "200px";
+    dialogConfig.data = {
+      display: true
+    };
+    this.dialog.open(ModalLoadingComponent, dialogConfig);
+  }
+
+ //Descargar documentos en Excel,CSV o PDF
+  downloadFile() {
+    this.openLoadingModal();
+    const subscription = this.invoices$.subscribe(invoices => {
+      if (invoices.length > 0) {
+        let values = this.mapFileKeys(invoices);
+        let extensionFile = this.billForm.get(['download']).value.toLowerCase();
+        switch (extensionFile) {
+          case "excel":
+            this.downloadFileService.exportAsExcelFile(values, 'Facturas de Telecom', extensionFile);
+            break;
+          case "csv":
+            this.downloadFileService.exportAsExcelFile(values, 'Facturas de Telecom', extensionFile);
+            break;
+          case "pdf":
+            values = this.mapFileKeys(invoices).map(value => {
+              return [...Object.values(value)]
+            });
+            let keys = ['Tipo Comprobante', 'N° Comprobante', 'Vencimiento', 'Importe'];
+            this.downloadFileService.exportPDF('Facturas de Telecom', keys, values);
+            break;
+        };
+        this.dialog.closeAll();
+      } else {
+        this.dialog.closeAll();
+        this.toastService.message({
+          title: 'No se pudo descargar.',
+          text: 'No tenés registros.',
+          type: 'Warning',
+        });
+      }
+
+    })
+    this.subscriptions.add(subscription);
+  }
+
+  mapFileKeys(invoices) {
+    return invoices.map(
+      invoice => {
+        return {
+          [`Tipo Comprobante`]: invoice.Tipo,
+          [`N° Comprobante`]: invoice.Documento,
+          Vencimiento: this.formatDate(invoice.Vencimiento),
+          Bruto: `${invoice.Moneda} ${invoice.Bruto}`
+        }
+      })
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.unsubscribe();
+  }
+
+
+}
+
+````
+
+### Servicios 
+
+
+
+Esta sección utiliza los siguientes servicios:
+
+| Servicio | Descripción |
+|--------|--------
+|getAgreements|Listado de Acuerdos|
+|getCustomers|Listado de Clientes|
+|getInvoice|Listado de Facturas y Notas de Crédito|
+|getPdf|Obtencion PDF por Letra y Nro de Documento|
+
+
+````javascript
+import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { AppConstants } from 'src/app/app.constants';
+import 'rxjs/add/operator/map';
+import "rxjs/add/operator/catch";
+import { GlobalServicesConfiguration } from './global-services-config';
+import { FacturasTelecomDatosModel } from 'src/app/models/facturastelecomdatos.model';
+import { AcuerdosModel } from 'src/app/models/acuerdos.model';
+import { CustomerModel } from 'src/app/models/customer.model';
+import { PdfModel } from 'src/app/models/pdf.model';
+@Injectable({
+  providedIn: 'root'
+})
+export class TelecomdatosSearchServiceService extends GlobalServicesConfiguration {
+  showBill: boolean = false;
+  showPdf: boolean = false;
+  constructor(
+    private _http: HttpClient
+  ) {
+    super()
+  }
+
+  //Acuerdos
+  getAgreements(nroCliente: string, quantity: number) {
+    let _url = `${this.getBaseUrl()}${AppConstants.urlAgreementsSearch}?nroCliente=${nroCliente}&cantFacturasPorAcuerdo=${quantity}`
+
+    return this._http.get<AcuerdosModel>(_url,
+      {
+        headers: this.head,
+        withCredentials: true
+      }
+    )
+      .map((data: any) => {
+        return data.httpCode === "200" ? data.response.GetFacturaListResponse.GetFacturaListResult.Acuerdos.Acuerdo : [];
+      })
+      .catch(this.handleError);
+  };
+
+  getCustomers(cuit: string) {
+    let _url = `${this.getBaseUrl()}${AppConstants.urlGetInfoFijaCustomerData}?cuit=${cuit}`
+    return this._http.get<CustomerModel>(_url,
+      {
+        headers: this.head,
+        withCredentials: true
+      }
+    )
+      .map(data => {
+        return data.response;
+      })
+      .catch(this.handleError);
+  };
+
+  //Facturas
+  getInvoice(nroCliente: string, quantity: number, agreement: string, voucher: string) {
+    let _url = `${this.getBaseUrl()}${AppConstants.urlAgreementsSearch}?nroCliente=${nroCliente}&cantFacturasPorAcuerdo=${quantity}`
+    return this._http.get<FacturasTelecomDatosModel>(_url,
+      {
+        headers: this.head,
+        withCredentials: true
+      }
+    )
+      .map(data => {
+        let dataInvoice = data.response.GetFacturaListResponse.GetFacturaListResult.Acuerdos.Acuerdo;
+        let Facturas;
+        dataInvoice.forEach(element => {
+          if (element.Numero == agreement) {
+            //ALL
+            if (voucher == 'T' || voucher == '') {
+              Facturas = element.Facturas.Factura;
+            } else {
+              Facturas = element.Facturas.Factura.filter(factura => factura.Tipo == voucher);
+            }
+          }
+        });
+        // return Facturas as FacturasTelecomDatosModel;
+        return Facturas;
+      })
+      .catch(this.handleError);
+  };
+
+  getPdf(nroDocumento: number, letraDocumento: string) {
+    let _url = `${this.getBaseUrl()}${AppConstants.urlObtainPdfFijadatosResources}?nroDocumento=${nroDocumento}&letraDocumento=${letraDocumento}`
+    return this._http.get<PdfModel>(_url,
+      {
+        headers: this.head,
+        withCredentials: true
+      }
+    )
+      .map(data => {
+        return data.response.GetFacturaImageResponse;
+      })
+      .catch(this.handleError);
+  };
+}
+
+````
+
+
+## Personal
+
+En el modulo de Personal puede consultar facturas o Notas de credito utilizando el filtro de Referecias de Pago, Numero de Linea y Tipo de Comprobante,tambien permite descargar el listado de la grilla a Excel/CSV/PDF.
+
+
+### Listado de Componentes
+
+| Componente | Descripción |
+|--------|--------
+|BillPersonalComponent|Este componente se usa para mostrar el listado facturas y Notas de crédito de Personal|
+
+
+##### BillPersonalComponent
+
+````javascript
+
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { MatSnackBar, MatDialog, MatDialogConfig } from '@angular/material';
+import { PersonalSearchServiceService } from 'src/app/services/personal-search-service.service';
+import { AppConstants } from 'src/app/app.constants';
+import { DomSanitizer } from '@angular/platform-browser';
+import { DialogOverviewPDFComponent } from 'src/app/shared/overview-pdf/overview-pdf.component';
+import { Subscription, Observable, of, combineLatest } from 'rxjs';
+import { DownloadFileService } from 'src/app/services/download-file/download-file.service';
+import { switchMap, map, catchError } from 'rxjs/operators';
+import { ModalLoadingComponent } from 'src/app/shared/modal-waiting/modal-loading.component';
+import { ToastService } from 'src/app/shared/toast/toast.service';
+import * as moment from 'moment';
+moment.locale('es');
+
+
+enum TypeDocument {
+  nc = "Nota de Crédito",
+  nd = "Nota de Débito"
+}
+
+interface Downloads {
+  value: string;
+  viewValue: string;
+}
+
+var docType = "ciclica";
+
+@Component({
+  selector: 'app-bill-personal',
+  templateUrl: './bill-personal.component.html',
+  styleUrls: ['./bill-personal.component.scss']
+})
+export class BillPersonalComponent implements OnInit, OnDestroy {
+  selectVoucher = 'ciclica';
+  references: any = [];
+  lines: any = [];
+  invoices: any = [];
+  displayedColumns: string[] = ['fechaEmision', 'tipoComprobante', 'nrofactura', 'fechaCierre', 'monto', 'Clase'];
+  selectReference = 0;
+  selectLine = 0;
+  subscriptions = new Subscription();
+  downloads: Downloads[] = [
+    { value: 'excel', viewValue: 'EXCEL' },
+    { value: 'csv', viewValue: 'CSV' },
+    { value: 'pdf', viewValue: 'PDF' },
+  ];
+  vouchers = [
+    { value: 'ciclica', viewValue: 'Facturas' },
+    { value: 'ND', viewValue: 'Notas de Débito' },
+    { value: 'NC', viewValue: 'Notas de Crédito' },
+  ];
+  billForm: FormGroup;
+  pdf: any;
+  pdfContent: any;
+  invoices$ = new Observable<any>();
+
+  constructor(
+    private formBuilder: FormBuilder,
+    private dialog: MatDialog,
+    private downloadFileService: DownloadFileService,
+    public snackBar: MatSnackBar,
+    private PersonalSearchServiceService: PersonalSearchServiceService,
+    private sanitizer: DomSanitizer,
+    private toastService: ToastService
+  ) { }
+
+  ngOnInit() {
+    this.buildForm();
+    this.loadItems();
+  }
+
+  loadItems() {
+    this.invoices$ =
+      this.PersonalSearchServiceService.getReferences(AppConstants.clientData.NUMERO_IDENTIFICACION_CLIENTE)
+        .pipe(
+          switchMap(references => {
+            this.selectReference = references[0].referenciaPago;
+            this.references = references;
+            return this.PersonalSearchServiceService.getLines(AppConstants.clientData.NUMERO_IDENTIFICACION_CLIENTE, this.selectReference);
+          }),
+          switchMap(lines => {
+            this.selectLine = lines[0].nroLinea;
+            this.lines = lines;
+            return this.loadInvoices(docType, 12, this.selectReference, '')
+          }),
+          catchError(_ => {
+            return of([])
+          })
+        );
+  }
+
+  buildForm() {
+    this.billForm = this.formBuilder.group({
+      reference: ['', [Validators.required]],
+      download: ['', [Validators.required]],
+      line: ['', [Validators.required]],
+      voucher: ['', [Validators.required]]
+    });
+  }
+
+  getDate(date) {
+    return moment(date).format('MM/YYYY');
+  }
+
+  getDateCierre(invoice) {
+    // Para la obtencion de la fecha de vencimiento, debo parsear YYYYMMDD cuando son las Facturas.
+    let voucherSelected = this.billForm.get(['voucher']).value;
+    if (voucherSelected == "ciclica") {
+      let y = invoice.fechaVencimiento.substr(0, 4),
+        m = invoice.fechaVencimiento.substr(4, 2),
+        d = invoice.fechaVencimiento.substr(6, 2);
+      let finalDate = d + '/' + m + '/' + y
+      return finalDate
+    } else {
+      // Para la obtencion de la fecha de vencimiento, devuelvo directo el valor que ya viene parseado.
+      return invoice.fechaVencimiento
+    }
+  }
+
+  get typeDocument() {
+    return this.billForm.get(['voucher']).value.toLowerCase() === "ciclica"
+  }
+
+  onSearch() {
+    let voucherSelected = this.billForm.get(['voucher']).value
+    let reference = this.billForm.get(['reference']).value
+
+    if (voucherSelected != "ciclica") {
+      docType = "NCND"
+      reference = AppConstants.clientData.NUMERO_IDENTIFICACION_CLIENTE
+    } else {
+      docType = "ciclica"
+      voucherSelected = ""
+    }
+    this.invoices$ = this.loadInvoices(docType, 12, reference, voucherSelected)
+  }
+
+  loadInvoices(docType, cant, reference, voucherSelected): Observable<any> {
+
+    return combineLatest(
+      [
+        this.PersonalSearchServiceService.getGetInfoMobileListResource(docType, cant, reference),
+        this.PersonalSearchServiceService.getLines(AppConstants.clientData.NUMERO_IDENTIFICACION_CLIENTE, this.selectReference)
+      ])
+      .pipe(
+        map(([invoices, lines]) => {
+          this.selectLine = lines[0].nroLinea;
+          this.lines = lines;
+          return invoices.filter(invoice => { return invoice.tipoComprobante === voucherSelected.toLowerCase() })
+        }),
+        map(invoices => {
+          return invoices.map(invoice => {
+            invoice.tipoComprobante = invoice.tipoComprobante === "" ? "Factura" : TypeDocument[invoice.tipoComprobante]
+            return invoice
+          })
+        })
+      )
+  }
+
+  openLoadingModal() {
+    const dialogConfig = new MatDialogConfig();
+    dialogConfig.disableClose = true;
+    dialogConfig.autoFocus = true;
+    dialogConfig.width = "200px";
+    dialogConfig.height = "200px";
+    dialogConfig.data = {
+      display: true
+    };
+    this.dialog.open(ModalLoadingComponent, dialogConfig);
+  }
+
+  downloadFile() {
+    this.openLoadingModal();
+    const subscription =
+      this.invoices$.subscribe(invoices => {
+        if (invoices.length > 0) {
+          let values = this.mapFileKeys(invoices);
+          let extensionFile = this.billForm.get(['download']).value.toLowerCase();
+          switch (extensionFile) {
+            case "excel":
+              this.downloadFileService.exportAsExcelFile(values, 'Facturas de Telecom', extensionFile);
+              break;
+            case "csv":
+              this.downloadFileService.exportAsExcelFile(values, 'Facturas de Telecom', extensionFile);
+              break;
+            case "pdf":
+              values = this.mapFileKeys(invoices).map(value => {
+                return [...Object.values(value)]
+              });
+              let keys = ['Fecha', 'Tipo Comprobante', 'N° Comprobante', 'Vencimiento', 'Importe'];
+              this.downloadFileService.exportPDF('Facturas de Telecom', keys, values);
+              break;
+          };
+          this.dialog.closeAll();
+        } else {
+          this.dialog.closeAll();
+          this.toastService.message({
+            title: 'No se pudo descargar.',
+            text: 'No tenés registros.',
+            type: 'Warning',
+          });
+        }
+      });
+    this.subscriptions.add(subscription);
+  }
+
+  mapFileKeys(items) {
+    let keys = {
+      fechaEmision: 'Fecha',
+      tipoComprobante: 'Tipo Comprobante',
+      nrofactura: 'N° Comprobante',
+      fechaVencimiento: 'Vencimiento',
+      monto: 'Importe'
+    }
+    return items.map(invoice => {
+      let newItem = { Fecha: '', [`Tipo Comprobante`]: '', [`N° Comprobante`]: '', Vencimiento: '', Importe: '' };
+      Object.entries(invoice).map((item) => {
+        if (keys[item[0]]) {
+          newItem[`${keys[item[0]]}`] = item[0] === 'tipoComprobante' ? 'Factura' : item[1];
+        }
+      })
+      return newItem;
+    })
+  }
+
+  getPdf(element) {
+    console.log("ITEM => ", element);
+    let item = {
+      typeDocument: this.billForm.get(['voucher']).value === 'ciclica' ? 'Factura' : TypeDocument[this.billForm.get(['voucher']).value.toLowerCase()],
+      nroDocumento: this.billForm.get(['voucher']).value === 'ciclica' ? element.referenciaPago : element.nrofactura,
+      importe: element.monto,
+      fecha: element.fechaEmision
+    }
+    const dialogConfig = new MatDialogConfig();
+    dialogConfig.disableClose = true;
+    dialogConfig.autoFocus = true;
+    dialogConfig.width = "200px";
+    dialogConfig.height = "200px";
+    dialogConfig.data = {
+      display: true
+    };
+    this.dialog.open(ModalLoadingComponent, dialogConfig);
+    let voucherSelected = this.billForm.get(['voucher']).value
+    let docType = voucherSelected != "ciclica" ? "NCND" : "ciclica";
+    const subscription =
+      this.PersonalSearchServiceService.postPDF(element, docType).subscribe(data => {
+        if (data.httpCode === "200") {
+          this.pdf = JSON.parse(data.response.renderComprobantePdfResult.pdfBytes);
+          let file = new Blob([new Uint8Array(this.pdf)], { type: 'application/pdf' });
+          let fileURL = URL.createObjectURL(file);
+          this.pdfContent = this.sanitizer.bypassSecurityTrustResourceUrl(fileURL);;
+          this.dialog.closeAll();
+          this.openModal(item);
+        }
+        else {
+          this.toastService.message({
+            title: 'Algo fallo.',
+            text: 'No se pudo obtener el PDF.',
+            type: 'Warning',
+          });
+          this.dialog.closeAll();
+        }
+      },
+        error => {
+          this.dialog.closeAll();
+        });
+    this.subscriptions.add(subscription);
+  }
+
+  getDialogTitle(item) {
+    return `${item.typeDocument}: ${item.nroDocumento} (${item.fecha}) - ${item.importe}`;
+  }
+
+  openModal(item) {
+    const dialogConfig = new MatDialogConfig();
+    dialogConfig.disableClose = true;
+    dialogConfig.autoFocus = true;
+    dialogConfig.width = "800px";
+    dialogConfig.height = "590px";
+    dialogConfig.data = {
+      id: 1,
+      title: this.getDialogTitle(item),
+      stream: this.pdfContent
+    };
+    this.dialog.open(DialogOverviewPDFComponent, dialogConfig);
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.unsubscribe();
+  }
+
+}
+
 ````
 
 ### Servicios
 
+Esta sección utiliza los siguientes servicios:
+
+| Servicio | Descripción |
+|--------|--------
+|getReferences|Obtención de Referencias de Pago|
+|getLines|Obtención de Números de Linea|
+|getGetInfoMobileListResource|Obtención los datos del usuario de GOL / Deesktop|
+|postPdf||
+
 
 ````javascript
+import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { AppConstants } from 'src/app/app.constants';
+import 'rxjs/add/operator/map';
+import "rxjs/add/operator/catch";
+import { GlobalServicesConfiguration } from './global-services-config';
+import { ReferenciasModel } from 'src/app/models/referencias.model';
+import { FacturasPersonalModel } from 'src/app/models/facturaspersonal.model';
+import { LinesModel } from 'src/app/models/lines.model';
+import { PdfModel } from 'src/app/models/pdf.model';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class PersonalSearchServiceService extends GlobalServicesConfiguration {
+  showBill: boolean = false;
+  constructor(
+    private _http: HttpClient
+  ) {
+    super()
+  }
+
+//Listado de Referencias
+  getReferences(cuit: string) {
+    let _url = `${this.getBaseUrl()}${AppConstants.urlReferencesSearch}?cuit=${cuit}`
+
+    return this._http.get<ReferenciasModel>(_url,
+      {
+        headers: this.head,
+        withCredentials: true
+      }
+    )
+      .map((data: any) => {
+        return data.httpCode === "200" ? data.response.mobileData : [];
+      })
+      .catch(this.handleError);
+
+  };
+
+//Listado de Número de Líneas
+  getLines(cuit: string, reference: number) {
+    let _url = `${this.getBaseUrl()}${AppConstants.urlReferencesSearch}?cuit=${cuit}&referenciaPago=${reference}`
+    return this._http.get<LinesModel>(_url,
+      {
+        headers: this.head,
+        withCredentials: true
+      }
+    )
+      .map(data => {
+        const results = data.response.mobileData;
+        return results;
+      })
+      .catch(this.handleError);
+  };
+
+//Listado de Facturas y Notas de Crédito/Débito
+  getGetInfoMobileListResource(tipoDocs: string, cantDocs: number, referentePago: number) {
+    const _url = `${this.getBaseUrl()}${AppConstants.urlGetInfoMobileListResource}?tipoDocs=${tipoDocs}&cantDocs=${cantDocs}&referentePago=${referentePago}`
+    return this._http.get<FacturasPersonalModel>(_url,
+      {
+        headers: this.head,
+        withCredentials: true
+      }
+    )
+      .map((data: any) => {
+        return data.httpCode === "200" ? data.response.GetLastComprobantesInfoResponse.GetLastComprobantesInfoResult.documentos.documento : [];
+      })
+      .catch(this.handleError);
+  };
+
+
+  postPDF(item, type) {
+    let body = {
+      "renderComprobantePdf": {
+        "database": type,
+        "doc": {
+          "referenciaPago": item.referenciaPago,
+          "nrofactura": item.nrofactura,
+          "fechaEmision": item.fechaEmision,
+          "totalPaginas": item.totalPaginas,
+          "type": item.type,
+          "file": item.file,
+          "offset": item.offset,
+          "nroPagInicial": 1,
+          "nroPagFinal": item.totalPaginas > 10 ? 10 : item.totalPaginas,
+          "tipoComprobante": item.tipoComprobante === "Factura" ? "" : item.tipoComprobante === "Nota de Débito" ? 'nd' : 'nc',
+          "letra": item.letra
+        }
+      }
+    }
+    let _url = `${this.getBaseUrl()}${AppConstants.urlObtainPdfMobileResources}`;
+    return this._http.post<any>(_url, body,
+      {
+        headers: this.head,
+        withCredentials: true,
+      });
+  }
+
+}
 
 ````
 
