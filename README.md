@@ -70,6 +70,7 @@ Este es el modulo principal del proyecto y contiene todos los componentes y serv
 
 ##### Composición
 
+
 ````javascript
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
@@ -139,6 +140,8 @@ Es la seccion principal y sirve para buscar un cliente ingresando el Tipo de Doc
 
 ##### CuicComponent
 
+<details>
+  <summary>Ver</summary>
 
 ```` javascript
 import { Component, OnInit, OnDestroy } from '@angular/core';
@@ -249,6 +252,7 @@ export class CuicComponent implements OnInit, OnDestroy {
 
 ````
 
+</details>
 
 ### Servicios
 
