@@ -1,6 +1,6 @@
-## :blue_book:  Datos de mi Empresa
+## :blue_book:  Descripcion del Proyecto
 
-Aplicación de uso general para la visualización de Facturas
+Aplicación de uso general para la visualización de Facturas de FiberCorp, Telecom Datos y Personal.
 
 ## :blue_book: Front-End
 > Framework: Angular 8,
