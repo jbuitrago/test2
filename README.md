@@ -130,14 +130,14 @@ La aplicacion se compone de las siguientes secciones:
 Es la seccion principal y sirve para buscar un cliente ingresando el Tipo de Documento y  Nro Documento: 30500010084 , 30500006613, 20260490347, 20295944537, 30500051309, 30500057102,30500094156,  30500247882, 30500487379
 
 
-### Componente
+### Listado de Componentes
 
 | Componente | Descripción |
 |--------|--------
 |CuicComponent|Este componente se usa para buscar un cliente|
 
 
-##### Composición
+##### CuicComponent
 
 
 ```` javascript
@@ -250,11 +250,89 @@ export class CuicComponent implements OnInit, OnDestroy {
 ````
 
 
-### Servicio
+### Servicios
 
 
+| Servicio | Descripción |
+|--------|--------
+|getUserAccountFromToken|Obtención los datos del usuario de GOL / Deesktop|
+|getDocumentsType|Obtención del listado de tipos de documento ( tabla ExternalData > DIM_TiposDocumentos )|
+|getClientByCuic|Obtención de los datos de la empresa asignada del usuario GOL / Desktop|
+|getUserAccountFromToken|Obtención de los datos de la empresa asignada del usuario GOL / Desktop|
 
-````
+
+````javascript
+
+import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { AppConstants } from 'src/app/app.constants';
+import { CustomHandlerRowsResponse } from 'src/app/models/response.model/response.model';
+import 'rxjs/add/operator/map';
+import "rxjs/add/operator/catch";
+import { GlobalServicesConfiguration } from './global-services-config';
+import { ClienteModel } from 'src/app/models/clientes.model';
+import { TeamAtentionModel, ContactoModel } from 'src/app/models/contactos.model';
+import { CookieService } from 'ngx-cookie-service';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class CuicSearchServiceService extends GlobalServicesConfiguration {
+  // A traves del servicio, se maneja la visualización directa o no de la App. ( GOL true, Desktop false ). El default es Desktop.
+  showApp: boolean = false;
+
+  constructor(
+    private _http: HttpClient,
+    private cookieService: CookieService
+  ) {
+    super()
+  }
+
+  // Obtención los datos del usuario de GOL / Deesktop
+  getUserAccountFromToken() {
+    let cookie = this.cookieService.get('oauth_token') ? this.cookieService.get('oauth_token') : AppConstants.onlyForDevelop;
+    let _url = `${this.getBaseUrl()}${AppConstants.urlGerUserFromToken}?token=${cookie}`
+    return this._http.get(_url, { headers: this.head, withCredentials: true })
+      .map(data => {
+        return data as CustomHandlerRowsResponse
+      })
+  };
+
+  // Obtención del listado de tipos de documento ( tabla ExternalData > DIM_TiposDocumentos )
+  getDocumentsType() {
+    let _url = `${this.getBaseUrl()}` + AppConstants.urlTiposDocumentosSearch
+    return this._http.get(_url,
+      {
+        headers: this.head,
+        withCredentials: true
+      }
+    )
+      .map(data => {
+        let results = data as CustomHandlerRowsResponse;
+        return results;
+      })
+      .catch(this.handleError);
+
+  };
+
+  // Obtención de los datos de la empresa asignada del usuario GOL / Desktop
+  getClientByCuic(cuic: string) {
+    let _url = `${this.getBaseUrl()}${AppConstants.urlCuicSearch}?likecuic=${cuic}`
+    return this._http.get<ClienteModel>(_url,
+      {
+        headers: this.head,
+        withCredentials: true
+      }
+    )
+      .map(data => {
+        return data[0] as ClienteModel;
+      })
+      .catch(this.handleError);
+  };
+
+  
+}
+
 
 ````
 
@@ -263,11 +341,364 @@ export class CuicComponent implements OnInit, OnDestroy {
 
 En el modulode Fibercorp puede consultar facturas y/o Notas de credito utilizando el filtro de Contratos.
 
+### Listado de Componentes
+
+| Componente | Descripción |
+|--------|--------
+|BillFibercorpComponent|Este componente se usa para mostrar el listado facturas de FiberCorp|
 
 
-## Telecom Voz
+##### BillFibercorpComponent
+
+
+````javascript
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { MatSnackBar, MatDialogConfig, MatDialog } from '@angular/material';
+import { FibercorpServiceService } from 'src/app/services/fibercorp-search-service.service';
+import { AppConstants } from 'src/app/app.constants';
+import { DomSanitizer } from '@angular/platform-browser';
+import { DownloadFileService } from 'src/app/services/download-file/download-file.service';
+import { Subscription } from 'rxjs/internal/Subscription';
+import * as moment from 'moment';
+import { DialogOverviewPDFComponent } from 'src/app/shared/overview-pdf/overview-pdf.component';
+import { Observable, forkJoin, of, combineLatest } from 'rxjs';
+import { switchMap, map, mergeMap, catchError } from 'rxjs/operators';
+import { ModalLoadingComponent } from 'src/app/shared/modal-waiting/modal-loading.component';
+import { ToastService } from 'src/app/shared/toast/toast.service';
+moment.locale('es');
+
+interface Vouchers {
+  value: string;
+  viewValue: string;
+}
+
+interface Downloads {
+  value: string;
+  viewValue: string;
+}
+const displayedColumns = ['date', 'type', 'documentNumber', 'dueDate', 'amount', 'contract', 'Clase']
+@Component({
+  selector: 'app-bill-fibercorp',
+  templateUrl: './bill-fibercorp.component.html',
+  styleUrls: ['./bill-fibercorp.component.scss']
+})
+
+export class BillFibercorpComponent implements OnInit, OnDestroy {
+  selectVoucher = 'I';
+  selectContract = 0;
+  contracts: any = [];
+  dolar: any = [];
+  dolarToday: String = "";
+  invoices: any = [];
+  creditNotes: any = [];
+  displayedColumns = displayedColumns;
+  displayedColumnsInvoice: string[];
+  displayedColumnsCreditNote: string[];
+  vouchers: Vouchers[] = [
+    { value: 'T', viewValue: 'Todos' },
+    { value: 'I', viewValue: 'Facturas' },
+    { value: 'CN', viewValue: 'Notas de Crédito' },
+
+  ];
+  downloads: Downloads[] = [
+    { value: 'excel', viewValue: 'EXCEL' },
+    { value: 'csv', viewValue: 'CSV' },
+    { value: 'pdf', viewValue: 'PDF' },
+  ];
+  subscriptions = new Subscription();
+  public billForm: FormGroup;
+  pdfContent: any;
+  file: any;
+  items$ = new Observable<any>();
+
+  constructor(
+    private formBuilder: FormBuilder,
+    public snackBar: MatSnackBar,
+    private sanitizer: DomSanitizer,
+    private dialog: MatDialog,
+    private FibercorpServiceService: FibercorpServiceService,
+    private downloadFileService: DownloadFileService,
+    private toastService: ToastService
+  ) { }
+
+  ngOnInit() {
+    this.buildForm();
+    this.loadItems();
+  }
+
+  buildForm() {
+    this.billForm = this.formBuilder.group({
+      contract: ['', [Validators.required]],
+      voucher: ['', [Validators.required]],
+      download: ['', [Validators.required]]
+    });
+  }
+
+  getAmount(amount) {
+    return `$ ${amount}`
+  }
+
+  loadItems() {
+    let cotizationDolars = [];
+    this.items$ =
+      combineLatest(
+        [
+          this.FibercorpServiceService.getContract(AppConstants.cuic),
+          this.FibercorpServiceService.getDolar()
+        ])
+        .pipe(
+          switchMap(([contract, cotizations]) => {
+            if (contract.rows.length > 0) {
+              cotizationDolars = cotizations;
+              this.selectContract = contract.rows[0].ID_SUSCRIPCION;
+              this.contracts = contract.rows;
+              let REQUEST = []
+              switch (this.selectVoucher) {
+                case "I":
+                  REQUEST.push(this.FibercorpServiceService.getInvoice(this.selectContract.toString(), 12))
+                  break;
+                case "CN":
+                  REQUEST.push(this.FibercorpServiceService.getCreditNotes(this.selectContract.toString(), 12))
+                  break;
+                case "T":
+                  REQUEST = [
+                    this.FibercorpServiceService.getInvoice(this.selectContract.toString(), 24).pipe(catchError(error => of([]))),
+                    this.FibercorpServiceService.getCreditNotes(this.selectContract.toString(), 24).pipe(catchError(error => of([])))
+                  ]
+                  break;
+              }
+              return forkJoin(REQUEST)
+            } else {
+              return of([])
+            }
+          }),
+          map(result => {
+            if (result.length > 0) {
+              let items = result.length > 1 ? result[0].concat(result[1]) : result[0];
+              let mapItems = items.map(item => {
+                // Obtengo el Array de cotizaciones el primer dato, que es el valido para el titulo.
+                this.dolarToday = cotizationDolars[0].cotization;
+
+                cotizationDolars.forEach((cotizationItem, Index) => {
+                  // Only for FACTURAS no Notas de Credito
+                  if (item.documentType == "F") {
+                    // FIX parse para quitar el -3:00 que viene en el ITEM.
+                    let parseItemDate = item.date.split("-3:00")
+                    item.date = parseItemDate[0]
+
+                    // Armo un objeto moment parseado a EN-US para validacion.
+                    let date = moment(moment(item.date).format('YYYY-MM-DD'));
+                    let dateFrom = moment(moment(cotizationItem.from).format('YYYY-MM-DD'));
+                    let dateTo = moment(moment(cotizationItem.to).format('YYYY-MM-DD'));
+
+                    if (date.isSameOrAfter(dateFrom, 'year') && date.isSameOrBefore(dateTo, 'year')) {
+                      // El año debe estar entre los de la cotizacion.
+                      if (date.isSame(dateFrom, 'month')) {
+                        // El mes debe ser igual.
+                        item.cotization = cotizationItem.cotization;
+                      }
+                    }
+                  }
+                })
+                // Tranformo la F a FACTURA sino a NOTA DE CREDITO.
+                item.documentType = item.documentType == "F" ? "FACTURA" : "NOTA DE CRÉDITO"
+                return item;
+              });
+              return mapItems.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+            } else {
+              return of([])
+            }
+          })
+        )
+  }
+
+  onSearch_Click() {
+    let contractValue = this.billForm.get(['contract']).value.toString();
+    let cotizationDolars = [];
+    this.items$ =
+      this.FibercorpServiceService.getDolar()
+        .pipe(
+          mergeMap((cotizations: any) => {
+            cotizationDolars = cotizations;
+            let REQUEST = []
+            switch (this.selectVoucher) {
+              case "I":
+                REQUEST.push(this.FibercorpServiceService.getInvoice(contractValue, 12))
+                break;
+              case "CN":
+                REQUEST.push(this.FibercorpServiceService.getCreditNotes(contractValue, 12))
+                break;
+              case "T":
+                REQUEST.push(this.FibercorpServiceService.getInvoice(contractValue, 12))
+                REQUEST.push(this.FibercorpServiceService.getCreditNotes(contractValue, 12))
+                break;
+            }
+            return forkJoin(REQUEST)
+          }),
+          map(result => {
+            let items = result.length > 1 ? result[0].concat(result[1]) : result[0];
+            let mapItems = items.map(item => {
+              cotizationDolars.forEach((cotizationItem, Index) => {
+                // Only for FACTURAS no Notas de Credito
+                if (item.documentType == "F") {
+                  // FIX parse para quitar el -3:00 que viene en el ITEM.
+                  let parseItemDate = item.date.split("-3:00")
+                  item.date = parseItemDate[0]
+
+                  // Armo un objeto moment parseado a EN-US para validacion.
+                  let date = moment(moment(item.date).format('YYYY-MM-DD'));
+                  let dateFrom = moment(moment(cotizationItem.from).format('YYYY-MM-DD'));
+                  let dateTo = moment(moment(cotizationItem.to).format('YYYY-MM-DD'));
+
+                  if (date.isSameOrAfter(dateFrom, 'year') && date.isSameOrBefore(dateTo, 'year')) {
+                    // El año debe estar entre los de la cotizacion.
+                    if (date.isSame(dateFrom, 'month')) {
+                      // El mes debe ser igual.
+                      item.cotization = cotizationItem.cotization;
+                    }
+                  }
+                }
+              })
+              // Tranformo la F a FACTURA sino a NOTA DE CREDITO.
+              item.documentType = item.documentType == "F" ? "FACTURA" : "NOTA DE CRÉDITO"
+              return item;
+            });
+            return mapItems.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+          }),
+          catchError(() => {
+            return of([]);
+          })
+        )
+  }
+
+  openLoadingModal() {
+    const dialogConfig = new MatDialogConfig();
+    dialogConfig.disableClose = true;
+    dialogConfig.autoFocus = true;
+    dialogConfig.width = "200px";
+    dialogConfig.height = "200px";
+    dialogConfig.data = {
+      display: true
+    };
+    this.dialog.open(ModalLoadingComponent, dialogConfig);
+  }
+
+  downloadFile() {
+    this.openLoadingModal();
+    const subscription = this.items$.subscribe(items => {
+      if (items.length > 0) {
+        let values = this.mapFileKeys(items);
+        let extensionFile = this.billForm.get(['download']).value.toLowerCase();
+        let keys;
+        switch (extensionFile) {
+          case "excel":
+            this.downloadFileService.exportAsExcelFile(values, 'Facturas de Telecom', extensionFile);
+            break;
+          case "csv":
+            values = this.mapFileKeys(items).map(value => {
+              return [...Object.values(value)]
+            });
+            keys = {
+              Fecha: 'Fecha',
+              [`Tipo Comprobante`]: 'Tipo Comprobante',
+              [`N° Comprobante`]: 'N° Comprobante',
+              Vencimiento: 'Vencimiento',
+              Importe: 'Importe',
+              [`Cotización`]: 'Cotización'
+            };
+            this.downloadFileService.exportCSV('Facturas de Telecom', keys, values);
+            break;
+          case "pdf":
+            keys = ['Fecha', 'Tipo Comprobante', 'N° Comprobante', 'Vencimiento', 'Importe', 'Cotización'];
+            values = this.mapFileKeys(items).map(value => {
+              return [...Object.values(value)]
+            });
+            this.downloadFileService.exportPDF('Facturas y Notas de Credito de Fibercorp', keys, values);
+            break;
+        };
+        this.dialog.closeAll();
+      } else {
+        this.dialog.closeAll();
+        this.toastService.message({
+          title: 'No se pudo descargar.',
+          text: 'No tenés registros.',
+          type: 'Warning',
+        });
+      }
+    });
+    this.subscriptions.add(subscription);
+  }
+
+  mapFileKeys(items) {
+    return items.map(
+      invoice => {
+        return {
+          Fecha: moment(invoice.date).format('MM/YYYY'),
+          [`Tipo Comprobante`]: invoice.documentType,
+          [`N° Comprobante`]: invoice.documentNumber,
+          Vencimiento: moment(invoice.dueDate).format('DD/MM/YYYY'),
+          Importe: `$ ${invoice.amount}`,
+          [`Cotización`]: ``
+        }
+      })
+  }
+
+  capitalize(value) {
+    return value.charAt(0).toUpperCase() + value.slice(1).toLowerCase();
+  }
+
+  getFile(documentType, contract, letter, date, documentNumber, amount) {
+    let item = {
+      type: documentType,
+      contract_number: contract,
+      letter,
+      date: moment(date).format('YYYYMMDD'),
+      fullDate: moment(date).format('DD/MM/YYYY'),
+      documentNumber,
+      amount: amount === "No saldo" ? "No saldo" : `$ ${amount}`,
+      typeFile: documentType.toLowerCase() === "factura" ? "F" : "N"
+    };
+    this.pdfContent = this.sanitizer.bypassSecurityTrustResourceUrl(this.FibercorpServiceService.getFile(item));
+    this.openModal(item);
+  }
+
+  getDialogTitle(item) {
+    return `${this.capitalize(item.type)}: ${item.documentNumber} (${moment(item.date).format('DD/MM/YYYY')}) - ${item.amount}`;
+  }
+
+  openModal(item) {
+    const dialogConfig = new MatDialogConfig();
+    dialogConfig.disableClose = true;
+    dialogConfig.autoFocus = true;
+    dialogConfig.width = "800px";
+    dialogConfig.height = "590px";
+    dialogConfig.data = {
+      id: 1,
+      title: this.getDialogTitle(item),
+      stream: this.pdfContent
+    };
+    this.dialog.open(DialogOverviewPDFComponent, dialogConfig);
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.unsubscribe();
+  }
+}
+
+
+````
+
+### Servicios
+
+
+
+
+# Telecom Voz
 
 Este módulo no esta desarrollado actualmente.
+
+
 
 ## Telecom Datos
 
