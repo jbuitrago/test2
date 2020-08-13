@@ -138,10 +138,9 @@ Es la seccion principal y sirve para buscar un cliente ingresando el Tipo de Doc
 |CuicComponent|Este componente se usa para buscar un cliente|
 
 
-##### CuicComponent
 
 <details>
-  <summary>Ver</summary>
+  <summary>CuicComponent</summary>
 
 ```` javascript
 import { Component, OnInit, OnDestroy } from '@angular/core';
@@ -265,6 +264,8 @@ Esta sección utiliza los siguientes servicios:
 |getClientByCuic|Obtención de los datos de la empresa asignada del usuario GOL / Desktop|
 |getUserAccountFromToken|Obtención de los datos de la empresa asignada del usuario GOL / Desktop|
 
+<details>
+  <summary>FibercorpServiceService</summary>
 
 ````javascript
 
@@ -341,6 +342,7 @@ export class CuicSearchServiceService extends GlobalServicesConfiguration {
 
 ````
 
+</details>
 
 ## FiberCorp
 
@@ -354,7 +356,8 @@ En el modulode Fibercorp puede consultar facturas y/o Notas de credito utilizand
 |BillFibercorpComponent|Este componente se usa para mostrar el listado facturas de FiberCorp|
 
 
-##### BillFibercorpComponent
+<details>
+  <summary>BillFibercorpComponent</summary> 
 
 ````javascript
 import { Component, OnInit, OnDestroy } from '@angular/core';
@@ -693,6 +696,7 @@ export class BillFibercorpComponent implements OnInit, OnDestroy {
 
 
 ````
+</details>
 
 ### Servicios
 
@@ -702,6 +706,9 @@ export class BillFibercorpComponent implements OnInit, OnDestroy {
 |getCustomers|Listado de Clientes|
 |getInvoice|Listado de Facturas|
 |getPdf|Obtenciion PDF por Letra y Nro de Documento|
+
+<details>
+  <summary>FibercorpServiceService</summary> 
 
 ````javascript
 import { Injectable } from '@angular/core';
@@ -801,6 +808,7 @@ export class TelecomdatosSearchServiceService extends GlobalServicesConfiguratio
 
 ````
 
+</details>
 
 # Telecom Voz
 
@@ -818,6 +826,10 @@ En el modulo de Telecom Datos puede consultar facturas o Notas de credito de Tel
 | Componente | Descripción |
 |--------|--------
 |BillTelecomdatosComponent|Este componente se usa para mostrar el listado facturas y Notas de crédito de Telecom Datos|
+
+
+<details>
+  <summary>BillTelecomdatosComponent</summary> 
 
 
 ````javascript
@@ -1056,9 +1068,9 @@ export class BillTelecomdatosComponent implements OnInit, OnDestroy {
 
 ````
 
+</details>
+
 ### Servicios 
-
-
 
 Esta sección utiliza los siguientes servicios:
 
@@ -1069,6 +1081,8 @@ Esta sección utiliza los siguientes servicios:
 |getInvoice|Listado de Facturas y Notas de Crédito|
 |getPdf|Obtencion PDF por Letra y Nro de Documento|
 
+<details>
+  <summary>TelecomdatosSearchServiceService</summary> 
 
 ````javascript
 import { Injectable } from '@angular/core';
@@ -1168,6 +1182,8 @@ export class TelecomdatosSearchServiceService extends GlobalServicesConfiguratio
 
 ````
 
+</details>
+
 
 ## Personal
 
@@ -1181,7 +1197,8 @@ En el modulo de Personal puede consultar facturas o Notas de credito utilizando 
 |BillPersonalComponent|Este componente se usa para mostrar el listado facturas y Notas de crédito de Personal|
 
 
-##### BillPersonalComponent
+<details>
+  <summary>BillPersonalComponent</summary>  
 
 ````javascript
 
@@ -1480,6 +1497,7 @@ export class BillPersonalComponent implements OnInit, OnDestroy {
 }
 
 ````
+</details>
 
 ### Servicios
 
@@ -1492,6 +1510,8 @@ Esta sección utiliza los siguientes servicios:
 |getGetInfoMobileListResource|Obtención los datos del usuario de GOL / Deesktop|
 |postPdf||
 
+<details>
+  <summary>PersonalSearchServiceService</summary>  
 
 ````javascript
 import { Injectable } from '@angular/core';
@@ -1595,7 +1615,7 @@ export class PersonalSearchServiceService extends GlobalServicesConfiguration {
 }
 
 ````
-
+</details>
 
 ## :orange_book: Casos de uso 
 
