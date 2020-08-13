@@ -32,6 +32,78 @@ Ejecutar en Desarrollo:
 ```
 npm run dev
 ```
+### Para poder ejecutar el proyecto 
+
+Dependiendo del administrador de dependencias (***NPM (https://www.npmjs.com/)*** o ***YARN (https://yarnpkg.com/)
+
+
+```
+npm run start - yarn start
+```
+
+### Crear empaquetado para deployar una nueva versión
+
+```
+npm run build-prod - yarn run build-prod  
+```
+
+### Arquitectura del proyecto
+
+. La estructura del proyecto esta compuesto de la siguiente manera:
+
+- AppModule
+
+
+##### AppModule
+
+Este es el modulo principal del proyecto y contiene todos los componentes y servicios del proyecto.
+
+
+| Component | Descripción |
+|--------|--------
+|CuicComponent|Este componente se usa para buscar un cliente|
+|BillFibercorpComponent|Este componente se usa para mostrar Facturas de Fibercorp|
+|BillTelecomvozComponent|Este componente se usa para mostrar Facturas de Telecom Voz|
+|BillTelecomdatosComponent|Este componente se usa para mostrar Facturas de Telecom Datos|
+|BillPersonalComponent|Este componente se usa para mostrar Facturas de Personal|
+
+
+##### Composición
+
+````
+import { BrowserModule } from '@angular/platform-browser';
+import { NgModule } from '@angular/core';
+import { AppRoutingModule } from './app-routing.module';
+import { AppComponent } from './app.component';
+import { CuicComponent } from './components/cuic/cuic.component';
+import { BillFibercorpComponent } from './components/bill-fibercorp/bill-fibercorp.component';
+import { BillTelecomvozComponent } from './components/bill-telecomvoz/bill-telecomvoz.component';
+import { BillTelecomdatosComponent } from './components/bill-telecomdatos/bill-telecomdatos.component';
+import { BillPersonalComponent } from './components/bill-personal/bill-personal.component';
+@NgModule({
+  declarations: [
+    AppComponent,
+    CuicComponent,
+    AppWrapperComponent,
+    BillFibercorpComponent,
+    BillTelecomvozComponent,
+    BillTelecomdatosComponent,
+    BillPersonalComponent,
+  ],
+  imports: [
+
+  ],
+  entryComponents: [],
+  providers: [
+
+  ],
+  bootstrap: [AppComponent]
+})
+export class AppModule { }
+
+````
+
+
 
 ## :blue_book: Documentación de la API
 
