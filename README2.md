@@ -1,8 +1,9 @@
-# Gestiones M贸viles
+# Zimbra Panel
 
-La versi贸n usada para este proyecto es Angular 8 (https://angular.io/).
+La versión usada para este proyecto es [Angular CLI](https://github.com/angular/angular-cli) version 10.0.2.
 
-###  馃捇 Instalaci贸n
+
+###  Instalación
 
 Dependiendo del administrador de dependencias (***NPM (https://www.npmjs.com/)*** o ***YARN (https://yarnpkg.com/)***)
 
@@ -11,7 +12,7 @@ npm install - yarn install
 ```
 
 
-### 馃挕 Para poder ejecutar el proyecto 
+### Para poder ejecutar el proyecto 
 
 Dependiendo del administrador de dependencias (***NPM (https://www.npmjs.com/)*** o ***YARN (https://yarnpkg.com/)***)
 
@@ -19,50 +20,63 @@ Dependiendo del administrador de dependencias (***NPM (https://www.npmjs.com/)**
 npm run start - yarn start
 ```
 
-### 馃挕 Crear empaquetado para deployar una nueva versi贸n
+### Crear empaquetado para deployar una nueva versi贸n
 
 ```
 npm run build-prod - yarn run build-prod  
 ```
 
 
-### 馃搶 Arquitectura del proyecto
-
-La documentaci贸n de como esta compuesto el proyecto puede verse de manera local usando Compodoc, para esto se debe ejecutar el siguiente comando ***npm run doc***, en la consola de comandos se mostrar谩 que se debe abrir la documentaci贸n en el siguiente puerto => https://localhost:5001. 
+### Arquitectura del proyecto
 
 . La estructura del proyecto esta compuesta de la siguiente manera:
 
+- AppModule
 - SharedModule
-- ServiceModule
-- ManagementsModule
-- ManagerModule
-- AdministratorModule
-- ModalModule
-- ZonesModule
-- CountriesModule
+- ToastModule
+
+
+##### AppModule
+
+Dentro de este módulo se encuentran los componentes de Material.
+
+| Component | Descripción |
+|--------|--------|
+|PanelComponent|Este componente se usa para administrar los tabs de navegacióm.
+|SearchCuicComponent|Este componente se usa para realizar la busqueda de clientes.
+|DomainsComponent|Este componente se usa para administrar los Dominios|
+|EditDomainsComponent|Este componente se usa para editar un Dominio|
+|TableEditDomainsComponent|Este componente se usa para editar un Dominio|
+|TableDomainsComponent|Este componente se usa para mostrar el listado de Dominios|
+|HeaderDomainsComponent|Este componente se usa para mostrar los botones del header|
+|AccountsComponent|Este componente se usa para administrar las Cuentas|
+|NewAccountComponent|Este componente se usa para crear una nueva Cuenta|
+|EditAccountComponent|Este componente se usa para editar una  Cuenta|
+|TableAccountsComponent|Este componente se usa para mostrar el listado de Dominios|
+|DistributionListComponent|Este componente se usa para administrar las Listas de Distribución|
+|ModalDomainsComponent|Este componente se usa para mostrar el listado de Dominios en un Modal|
+|HeaderDistributionListComponent|Este componente se usa para mostrar los botones del header|
+|NewDistributionListComponent|Este componente se usa para crear una nueva lista de distribucion|
+|TableDistributionListComponent|Este componente se usa para mostrar el listado de Dominios|
+|ServicePricesComponent|Este componente se usa para administrar los Precios del Servicio|
+|ChargeInquiryComponent|Este componente se usa para administrar los Cargos adquiridos|
+|TableChargesComponent|Este componente se usa para mostrar el listado de Cargos|
+|TablePeriodConsumptionComponent|Este componente se usa para mostrar el listado de consumos|
+|HeaderSharedDomainsComponent|Este componente se usa para administrar  los Dominios compartidos|
+|SharedDomainsComponent|Este componente se usa para administrar los Dominios compartidos|
+
+
 
 ##### SharedModule
 
-Dentro de este m贸dulo se encuentran todos los componentes que son usados en la aplicaci贸n.
+Dentro de este módulo se encuentran los componentes de Angular Material 
+Angular Material es una librería de estilos (como Bootstrap) basada en la guía de diseño de Material Design.
 
-| Component | Descripci贸n |
-|--------|--------|
-|CardInfoComponent|Este componente se usa para mostrar cartas flotantes, compuestos con un t铆tulo y una descripci贸n|
-|IconOptionComponent|Este componente se usa para mostrar opciones con iconos|
-|NavBarComponent|Este componente es el barra de navegaci贸n usada entre las pantallas de la aplicaci贸n|
-|DrodpownComponent|Este componente se usa para poder listar elementos con un formato gen茅rico y tambi茅n poder seleccionarlos|
-|TabItemsComponent|Este componente se usa para los tabs usados en las distintas gestiones|
-|ListItemComponent|Este componente se usa para listar valores simples|
-|MessageComponent|Este componente se usa para mostrar un mensaje informativo con un icono que indica la magnitud del mensaje|
-|LoadingComponent|Este componente se usa para mostrar un cargador|
-|SpinnerComponent|Este componente se usa para mostar un logo de carga mientras se espera alguna acci贸n|
-|InputSearchComponent|Este componente se usa para buscar segun un criterio de busqueda|
-|LoadingMessageComponent|Este componente se usa en los modales para mostrar un mensaje mientras se espera|
-|PaginationComponent|Este componente se usa para gestionar la paginaci贸n de un bloque de datos|
-|CheckBoxComponent|Este componente se usa para seleccionar o no elemeentos|
-|LinesComponent|Este componente se usa para listar numeros de telefono en los modales|
+##### ToastModule
 
-##### Composici贸n
+Dentro de este módulo se encuentran los componentes de Toast para el manejo de notificaciones.
+
+##### Composición
 
 ````
 import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from "@angular/core";
@@ -82,66 +96,14 @@ export class SharedModule {}
 
 ````
 
-##### Como usarlo
+#### Services
 
-Dependiendo de donde se quiera usar, se debe importar el m贸dulo SharedModule. Por ejemplo en el siguiente ejemplo, se importa el m贸dulo de SharedModule en el m贸dulo ***CountriesModule***.
+No existe un modulo que adminsitre los diferentes servicions de la aplicacion, cada uno es invocado dentro del componente que lo utiliza.
 
-````
-import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from "@angular/core";
-import { NgxPermissionsModule } from "ngx-permissions";
-import { ReactiveFormsModule, FormsModule } from "@angular/forms";
-import { CountriesComponent } from "./countries.component";
-import { CountriesRoutingModule } from "./countries-routing.module";
-import { HttpClientModule } from "@angular/common/http";
-import { CommonModule } from "@angular/common";
-import { SharedModule } from "@app/shared/shared.module";
-import { ModalModule } from "@app/shared/modals/modal.module";
-
-@NgModule({
-  declarations: [CountriesComponent],
-  imports: [
-    HttpClientModule,
-    FormsModule,
-    NgxPermissionsModule,
-    ReactiveFormsModule,
-    CountriesRoutingModule,
-    CommonModule,
-    FormsModule,
-    SharedModule,
-    ModalModule
-  ],
-  providers: [],
-  exports: [],
-  bootstrap: [],
-  schemas: [CUSTOM_ELEMENTS_SCHEMA]
-})
-export class CountriesModule {}
-
-````
-
-#### ServiceModule
-
-Dentro de este m贸dulo se encuentran todos los servicios que son usados en la aplicaci贸n.
-
-| Servicio | Descripci贸n |
+| Servicio | Descripción |
 |--------|--------|
-|StandardUserOptionService|Este servicio contiene las opciones de la aplicaci贸n para las gestiones|
-|CountriesService|Este servicio se usa para gestionar los pa铆ses usados en la aplicaci贸n|
-|StandardUserOtherOptionService|Este servicio contiene las otras opciones de la aplicacion para las gestiones|
-|ManagementsService|Este servicio se usa para consumir las gestiones realizadas de la aplicaci贸n|
-|PackService|Este servicio se usa para gestionar los paquetes usados en la aplicaci贸n|
-|PlanService|Este servicio se usa para gestionar los planes usados en la aplicaci贸n|
-|TelephoneNumberService|Este servicio se usa para consumir las l铆neas telef贸nicas del usuario logueado|
-|UserService|Este servicio se usa para consumir datos del usuario logueado|
-|TypeFieldService|Este servicio se usa para gestionar los tipos de campos de los formularios|
-|FieldService|Este servicio se usa para gestionar los campos de los formularios|
-|TransactionsService|Este servicio se usa para gestionar las transacciones realizadas en la aplicaci贸n|
-|DownloadFileService|Este servicio se usa para descargar los distintos tipos de reportes|
-|InstalledBaseService|Este servicio se usa para obtener usuarios dependiendo a un listado de criterios|
-|EnvironmentService|Este servicio se usa para verificar en que entorno se esta ejecutando la aplicaci贸n|
-|EloquaService|Este servicio se usa para la gesti贸n del env铆o de mails por eloqua|
-|QuotaService|Este servicio se usa para gestionar las cuotas usados en la aplicaci贸n|
-|DatesService|Este servicio contiene metodos que dan distintos formatos fechas usados en la aplicaci贸n|
+
+
 
 ##### Composici贸n
 
